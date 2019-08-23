@@ -1,0 +1,8 @@
+---
+
+vault_home: /apps/vault
+vault_data: "{{ vault_home }}/data"
+
+vault_version: 1.1.4
+
+VAULT_ADDR: http://10.13.3.10:8200

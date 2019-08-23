@@ -1,0 +1,11 @@
+---
+- name: Install Vault Server Dependencies
+  yum:
+    name:
+      - epel-release
+      - unzip
+    state: present
+
+- import_tasks: firewalld.yml
+- import_tasks: service.yml
+- import_tasks: vault-server.yml

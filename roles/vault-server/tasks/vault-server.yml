@@ -1,0 +1,118 @@
+---
+- name: set_fact for localhost
+  tags: always
+  set_fact:
+    env: "{{ ansible_hostname.split('utru')[1] }}"
+    env0: "{{ ansible_hostname.split('tst')[1] }}"
+    local_env: "{{ ansible_hostname.split('utru(tst|dev|qa|prd)') }}"
+  when: ansible_hostname is search('utru(tst|dev|qa|prd)')
+
+- debug:
+    msg: "Vault Server : {{ env }} {{env0}} HostName is {{ local_env }}"
+
+- assert:
+    that:
+      - env is search('tst|dev|qa|prd')
+
+- name: Dowlnoad Vault from HashiCorp
+  get_url:
+    url: "https://releases.hashicorp.com/vault/1.1.4/vault_1.1.4_linux_amd64.zip"
+    dest: "/tmp/vault_1.1.4_linux_amd64.zip"
+    # checksum: "sha1:a79bb68f0ebe43b8c55d91ac58950e0c44aa0310"
+    #when: not TCdir.stat.exists
+
+- name: Extract
+  unarchive:
+    src: "/tmp/vault_1.1.4_linux_amd64.zip"
+    dest: "/usr/bin"
+    copy: no
+  #when: not TCdir.stat.exists
+
+- name: Create Vault Server Dirs
+  file:
+    path: "{{ item}}"
+    state: directory
+  with_items:
+    - /etc/vault
+    - /apps/data/vault
+    - /var/log/vault/logs
+
+- name: copy Vault Server Configs
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    owner: root
+    group: root
+  with_items:
+    - { src: 'config.json', dest: '/etc/vault/config.json', owner: 'root', group: 'root', mode: '0640' }
+
+- name: service | {{ item }}
+  service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  with_items:
+    - [ 'vault' ]
+  tags: vaultService
+
+- name: Modify profile
+  lineinfile:
+    path: /root/.bash_profile
+    line: export VAULT_ADDR=http://10.13.3.10:8200
+    insertbefore: "^export PATH"
+
+- name: Check Vault Status
+  shell: vault status -address=http://10.13.3.10:8200 | grep -i initialized
+  ignore_errors: true
+  args:
+    warn: false
+  register: vaultStatus
+
+- name: Initialize the vault
+  shell: vault operator init -address=http://10.13.3.10:8200 > /etc/vault/init.file
+  ignore_errors: true
+  args:
+    warn: true
+  when: "vaultStatus.stdout.split()[1] != 'true'"
+
+#
+#  Check the Vault Status
+#
+- name: Check Vault Status
+  shell: vault status -address=http://10.13.3.10:8200 | grep -i initialized
+  ignore_errors: true
+  args:
+    warn: false
+  register: vaultStatus
+
+- debug:
+    msg: "{{ vaultStatus.stdout.split()[1] }}"
+
+
+- name: Unseal Vault
+  shell: cat /etc/vault/init.file
+  ignore_errors: true
+  args:
+    warn: true
+  when: vaultStatus.stdout.split()[1] == 'true'
+  register: vaultUnsealKey
+
+- debug:
+    msg: "{{ vaultUnsealKey.stdout_lines }}"
+
+# - name: copy HAProxy_host configs
+#   template:
+#     src: "{{ item.src }}"
+#     dest: "{{ item.dest }}"
+#     mode: "{{ item.mode }}"
+#     backup: yes
+#     owner: root
+#     group: root
+#   with_items:
+#     - { src: '{{ansible_hostname}}-haproxy.cfg.j2', dest: '/etc/haproxy/haproxy.cfg', owner: 'root', group: 'root', mode: '0644' }
+#   when: ('ansible_hostname' in haproxy_hosts.utruprdhap)
+
+  notify:
+    - service restart vault
+...

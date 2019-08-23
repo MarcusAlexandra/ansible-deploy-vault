@@ -1,0 +1,19 @@
+---
+- name: Create Systemd for Vault Service
+  copy:
+    backup: true
+    src: "{{ role_path }}/files/vault.service"
+    dest: /etc/systemd/system/vault.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload systemctl
+
+- name: Enable Vault Server Service
+  file:
+    state: link
+    src: /etc/systemd/system/vault.service
+    dest: /etc/systemd/system/multi-user.target.wants/vault.service
+    owner: root
+    group: root
+  notify: reload systemctl

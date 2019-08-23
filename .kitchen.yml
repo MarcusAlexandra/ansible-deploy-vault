@@ -1,0 +1,51 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: ansible_playbook
+  ansible_version: 2.7.5
+  ansible_yum_repo: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+  hosts: all
+  require_chef_for_busser: true
+  require_ruby_for_busser: false
+  ansible_verbose: false
+  ansible_verbosity: 3
+  ansible_check: false
+  ansible_diff: true
+  # extra_vars: "2019.1.1"
+  # ansible_inventory: inventory/swarm
+
+transport:
+  max_ssh_sessions: 6
+
+verifier:
+  ruby_bindir: /opt/chef/embedded/bin
+
+platforms:
+  - name: ansible-centos-7.6.1810-x86_64
+    driver_config:
+      box: ansible-centos-7.6.1810-x86_64
+      box_url: file:///Users/lindsworthgarvey/curbStoneOps/vagrantRepo/ansible-centos-7.6.1810-x86_64
+      synced_folders:
+       - [ "~/curbStoneOps/ansiblePlaybook", "/vagrant"]
+       - [ "~/Downloads/Software", "/instImages"]
+
+suites:
+
+  - name: vault-server
+    driver:
+      vm_hostname: utrutstvault01v.ssi.com
+      customize:
+        cpus: 1
+        memory: 1048
+        natdnshostresolver1: 'on'
+      network:
+        - ["private_network", {ip: "10.13.3.10"}]
+        - ["forwarded_port", {guest: 8200, host: 8200}]
+    provisioner:
+      hosts: ansible-centos-7.6.1810-x86_64
+      require_ansible_repo: true
+      playbook: vault-server.yml
+      # ansible_vault_password_file: [".tC_vault_pass",".kitchenCI",".vault_pass"]
+...

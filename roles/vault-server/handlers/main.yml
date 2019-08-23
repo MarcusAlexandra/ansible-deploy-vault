@@ -1,0 +1,17 @@
+---
+- name: service restart vault
+  service:
+    name: vault
+    state: restarted
+  tags: vault
+
+- name: service restart firewalld
+  service:
+    name: firewalld
+    state: restarted
+  tags: firewalld
+
+- name: reload systemctl
+  command: systemctl daemon-reload
+
+...

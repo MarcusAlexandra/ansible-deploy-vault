@@ -1,0 +1,14 @@
+*.gem
+*.rbc
+*.retry
+*.DS_Store
+.kitchen
+Gemfile.lock
+# Ansible
+# Virtualenv
+.Python
+bin
+include
+lib
+pip-selfcheck.json
+.vault_pass
