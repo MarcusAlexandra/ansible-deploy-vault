@@ -1,5 +1,6 @@
 [Unit]
 Description=vault service
+Documentation=https://vaultproject.io/docs/
 Requires=network-online.target
 After=network-online.target
 ConditionFileNotEmpty=/etc/vault/config.json
@@ -9,8 +10,13 @@ EnvironmentFile=-/etc/sysconfig/vault
 Environment=GOMAXPROCS=2
 Restart=on-failure
 ExecStart=/usr/bin/vault server -config=/etc/vault/config.json
-StandardOutput=/var/log/vault/vault.log
-StandardError=/var/log/vault/error.log
+ExecReload=/usr/bin/kill --signal HUP $MAINPID
+CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
+Capabilities=CAP_IPC_LOCK+ep
+SecureBits=keep-caps
+NoNewPrivileges=yes
+StandardOutput=/var/log/vault/logs/vault.log
+StandardError=/var/log/vault/logs/error.log
 LimitMEMLOCK=infinity
 ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGTERM

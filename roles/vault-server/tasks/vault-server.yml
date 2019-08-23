@@ -14,16 +14,31 @@
     that:
       - env is search('tst|dev|qa|prd')
 
+- name: Creating vault user group
+  group:
+    name: "{{ vault_group }}"
+  become: no
+
+- name: Creating vault user
+  user:
+    name: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    system: yes
+    shell: "/sbin/nologin"
+    comment: "vault nologin User"
+    createhome: "no"
+    state: present
+
 - name: Dowlnoad Vault from HashiCorp
   get_url:
-    url: "https://releases.hashicorp.com/vault/1.1.4/vault_1.1.4_linux_amd64.zip"
-    dest: "/tmp/vault_1.1.4_linux_amd64.zip"
+    url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
+    dest: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
     # checksum: "sha1:a79bb68f0ebe43b8c55d91ac58950e0c44aa0310"
     #when: not TCdir.stat.exists
 
 - name: Extract
   unarchive:
-    src: "/tmp/vault_1.1.4_linux_amd64.zip"
+    src: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
     dest: "/usr/bin"
     copy: no
   #when: not TCdir.stat.exists
@@ -70,12 +85,20 @@
   register: vaultStatus
 
 - name: Initialize the vault
-  shell: vault operator init -address=http://10.13.3.10:8200 > /etc/vault/init.file
+  shell: vault operator init -key-shares=5 -key-threshold=3 -format json
+  # shell: vault operator init -address=http://10.13.3.10:8200 > /etc/vault/init.file
+  environment:
+    VAULT_ADDR: "http://10.13.3.10:8200"
   ignore_errors: true
   args:
     warn: true
   when: "vaultStatus.stdout.split()[1] != 'true'"
+  register: vaultInitResult
 
+# - debug:
+#     msg: "{{ vaultInitResult }}"
+
+#-------------------------------------------------------------------------------
 #
 #  Check the Vault Status
 #
@@ -89,30 +112,53 @@
 - debug:
     msg: "{{ vaultStatus.stdout.split()[1] }}"
 
-
-- name: Unseal Vault
-  shell: cat /etc/vault/init.file
-  ignore_errors: true
-  args:
-    warn: true
-  when: vaultStatus.stdout.split()[1] == 'true'
-  register: vaultUnsealKey
+#-------------------------------------------------------------------------------
+# Extend ability to use the mlock syscall without running the process as root to
+#   Vault executable.
+#
+- name: Define Vault Capabilities
+  capabilities:
+    path: /usr/bin/vault
+    capability: cap_ipc_lock+ep
+    state: present
 
 - debug:
-    msg: "{{ vaultUnsealKey.stdout_lines }}"
+    msg: "{{ vaultInitResult.stdout }}"
 
-# - name: copy HAProxy_host configs
-#   template:
-#     src: "{{ item.src }}"
-#     dest: "{{ item.dest }}"
-#     mode: "{{ item.mode }}"
-#     backup: yes
-#     owner: root
-#     group: root
+- name: Parse output of vault init
+  set_fact:
+    vault_init_parsed: "{{ vaultInitResult.stdout | from_json }}"
+
+# - debug:
+#     msg: "{{ vault_init_parsed |json_query('unseal_keys_hex')}}"
+
+- debug:
+    msg: "{{ vault_init_parsed |json_query('root_token')}}"
+
+- name: Unseal Vault
+  shell: |
+    vault operator unseal {{ item }}
+  environment:
+    VAULT_ADDR: "http://10.13.3.10:8200"
+  with_items: "{{ vault_init_parsed |json_query('unseal_keys_hex[*]')}}"
+
+- name: Vault login
+  shell: |
+    vault login {{ item }}
+  environment:
+    VAULT_ADDR: "http://10.13.3.10:8200"
+  with_items: "{{ vault_init_parsed |json_query('root_token')}}"
+  register: vaultLogin
+
+# - debug:
+#     msg: "{{ vaultLogin.rc }}"
+
+# - name: Enable Vault Logging
+#   shell: vault audit enable file file_path="{{ item }}"
 #   with_items:
-#     - { src: '{{ansible_hostname}}-haproxy.cfg.j2', dest: '/etc/haproxy/haproxy.cfg', owner: 'root', group: 'root', mode: '0644' }
-#   when: ('ansible_hostname' in haproxy_hosts.utruprdhap)
+#     - /var/log/vault/logs/audit.log
+#   when: 'vaultLogin.rc == 0'
 
-  notify:
-    - service restart vault
+  # notify:
+  #   - service restart vault
 ...
