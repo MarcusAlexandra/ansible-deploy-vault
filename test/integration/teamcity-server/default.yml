@@ -1,5 +1,0 @@
----
-- name: wrapper playbook for kitchen testing "teamcity-agent" role
-  hosts: localhost
-  roles:
-    - teamcity-agent
