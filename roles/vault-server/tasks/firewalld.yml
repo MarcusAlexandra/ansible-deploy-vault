@@ -8,7 +8,6 @@
   with_items:
     - "8200/tcp"
   tags: firewalld
-  # when: ansible_fqdn is search('utrutsttcs01v')
 
 - name: Add mappings to /etc/hosts
   blockinfile:
@@ -17,9 +16,9 @@
       {{ item.ip }} {{ item.fqdn }} {{ item.name }}
     marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
   with_items:
-  - { ip: 10.13.3.10, fqdn: utrutstvault01v.ssi.com, name: utrutstvault01v  }
-  - { ip: 10.13.3.10, fqdn: utrutstvault02v.ssi.com, name: utrutstvault02v  }
-  when: ansible_fqdn is search('utrutstvault01v')
+  - { ip: 10.13.3.10, fqdn: usctvlvault01v.curbstoneops.com, name: usctvlvault01v  }
+  - { ip: 10.13.3.11, fqdn: usctvlvault02v.curbstoneops.com, name: usctvlvault02v  }
+  when: ansible_fqdn is search('usctvlvault01v')
 
   notify:
     - service restart firewalld

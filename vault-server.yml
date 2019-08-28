@@ -6,10 +6,5 @@
   connection: ssh
   remote_user: root
 
-  # vars:
-  #   mount_dir: "/opt/teamcity"
-  #   user: "teamcity"
-  #   user_id: "1202"
-
   roles:
     - vault-server

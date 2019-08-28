@@ -1,9 +1,9 @@
-# ansible-devops-unified/../roles/teamcity-server/README.md
+# ansible-deploy-vault/../../roles/README.md
 
 ---
 Role Name
 =========
-  - tvault-server
+  - vault-server
 
 Role Prerequisites:
 ---------------------
@@ -13,40 +13,11 @@ Installation Requirements
 ----------------------------
 Playbook assumes the archived image has been uploaded to Sonatype Nexus
 
-~/Downloads/Software/TeamCity $ curl -v -u lindsworth_garvey --upload-file TeamCity-2019.1.1.tar.gz 'http://nexus.surveysampling.com/repository/tc-install/'
-Enter host password for user 'lindsworth_garvey':
-*   Trying 10.1.21.59...
-* TCP_NODELAY set
-* Connected to nexus.surveysampling.com (10.1.21.59) port 80 (#0)
-* Server auth using Basic with user 'lindsworth_garvey'
-> PUT /repository/tc-install/TeamCity-2019.1.1.tar.gz HTTP/1.1
-> Host: nexus.surveysampling.com
-> Authorization: Basic bGluZHN3b3J0aF9nYXJ2ZXk6MTBBfDN4QC9cZFJhMjkh
-> User-Agent: curl/7.59.0
-> Accept: */*
-> Content-Length: 1193340931
-> Expect: 100-continue
->
-< HTTP/1.1 100 Continue
-
-* We are completely uploaded and fine
-< HTTP/1.1 201 Created
-< Date: Wed, 10 Jul 2019 18:09:35 GMT
-< Server: Nexus/3.2.1-01 (OSS)
-< X-Frame-Options: SAMEORIGIN
-< X-Content-Type-Options: nosniff
-< Content-Length: 0
-< Strict-Transport-Security: max-age=31536000
-<
-* Connection #0 to host nexus.surveysampling.com left intact
-~/Downloads/Software/TeamCity $
-
-
 export VAULT_ADDR=http://10.13.3.10:8200
 echo "export VAULT_ADDR=http://10.13.3.10:8200" >> ~/.bashrc
 
   See:
-  [root@utrutstvault01v ~]# vault --help
+  [root@usctvlvault01v ~]# vault --help
   Usage: vault <command> [args]
 
   Common commands:
@@ -74,14 +45,14 @@ echo "export VAULT_ADDR=http://10.13.3.10:8200" >> ~/.bashrc
       secrets        Interact with secrets engines
       ssh            Initiate an SSH session
       token          Interact with tokens
-  [root@utrutstvault01v ~]#
+  [root@usctvlvault01v ~]#
 
 Unsealing the Vault
 ----------------------
 
 Unsealing the vault requires a minimum of three Unseal Keys. The Unseal Keys can be retrieved from Vault init.file
 
-     [root@utrutstvault01v ~]# cat /etc/vault/init.file
+     [root@usctvlvault01v ~]# cat /etc/vault/init.file
      Unseal Key 1: kIFvVPrcbMO5sCLC05AEqUTKqS08UoYOeNmvMv6o1pZb
      Unseal Key 2: Upb3qn7y4UJgKGHEB6gsSHphLLuwvVJxeBAUaWE3RoE8
      Unseal Key 3: uoLcgBHUG7UkKZhMqxJzBdgCplK+XVLq+e5Bn22wcQuG
@@ -100,12 +71,12 @@ Unsealing the vault requires a minimum of three Unseal Keys. The Unseal Keys can
 
      It is possible to generate new unseal keys, provided you have a quorum of
      existing unseal keys shares. See "vault operator rekey" for more information.
-     [root@utrutstvault01v ~]#
+     [root@usctvlvault01v ~]#
 
 
 To Unseal the Vault, having gotten the Unseal Keys from the Vault init.file, use the "vault operator" command as follows:
 
-     [root@utrutstvault01v ~]# vault operator unseal kIFvVPrcbMO5sCLC05AEqUTKqS08UoYOeNmvMv6o1pZb
+     [root@usctvlvault01v ~]# vault operator unseal kIFvVPrcbMO5sCLC05AEqUTKqS08UoYOeNmvMv6o1pZb
      Key                Value
      ---                -----
      Seal Type          shamir
@@ -117,7 +88,7 @@ To Unseal the Vault, having gotten the Unseal Keys from the Vault init.file, use
      Unseal Nonce       911eceee-1d46-8dd1-2d04-9206f061cee0
      ersion            1.1.4
      HA Enabled         false
-     [root@utrutstvault01v ~]# vault operator unseal Upb3qn7y4UJgKGHEB6gsSHphLLuwvVJxeBAUaWE3RoE8
+     [root@usctvlvault01v ~]# vault operator unseal Upb3qn7y4UJgKGHEB6gsSHphLLuwvVJxeBAUaWE3RoE8
      Key                Value
      ---                -----
      Seal Type          shamir
@@ -129,7 +100,7 @@ To Unseal the Vault, having gotten the Unseal Keys from the Vault init.file, use
      Unseal Nonce       911eceee-1d46-8dd1-2d04-9206f061cee0
      Version            1.1.4
      HA Enabled         false
-     [root@utrutstvault01v ~]# vault operator unseal uoLcgBHUG7UkKZhMqxJzBdgCplK+XVLq+e5Bn22wcQuG
+     [root@usctvlvault01v ~]# vault operator unseal uoLcgBHUG7UkKZhMqxJzBdgCplK+XVLq+e5Bn22wcQuG
      Key             Value
      ---             -----
      Seal Type       shamir
@@ -141,7 +112,7 @@ To Unseal the Vault, having gotten the Unseal Keys from the Vault init.file, use
      Cluster Name    vault-cluster-a776ed8b
      Cluster ID      f8f1fe85-4abb-9d7a-6703-7f0a914f3ac3
      HA Enabled      false
-     [root@utrutstvault01v ~]#
+     [root@usctvlvault01v ~]#
 
 
 
@@ -150,7 +121,7 @@ Vault Login
 
 Using the Vault CLI, login to the Vault using the "Initial Root Token"
 
-  [root@utrutstvault01v ~]# vault login
+  [root@usctvlvault01v ~]# vault login
   Token (will be hidden):
   Success! You are now authenticated. The token information displayed below
   is already stored in the token helper. You do NOT need to run "vault login"
@@ -165,13 +136,13 @@ Using the Vault CLI, login to the Vault using the "Initial Root Token"
   token_policies       ["root"]
   identity_policies    []
   policies             ["root"]
-  [root@utrutstvault01v ~]#
+  [root@usctvlvault01v ~]#
 
 Once logged in - you're able to interact with the Vault
 
-  [root@utrutstvault01v ~]# vault auth enable approle
+  [root@usctvlvault01v ~]# vault auth enable approle
   Success! Enabled approle auth method at: approle/
-  [root@utrutstvault01v ~]#
+  [root@usctvlvault01v ~]#
 
 Requirements
 ------------
@@ -230,4 +201,4 @@ Update with output from playbook
 
   Integration tests
   --------------------
-      lindsworth_garvey@SHE-MB1036 ~/ssiRepo/ansiblePlaybook/develOpment/ansible-devops-unified (feature/DevOps-4796-1) $ kitchen verify
+      lindsworthgarvey@curbStoneOps ~/curbStoneOps/ansiblePlaybook/develOpment/ansible-devops-unified (feature/DevOps-4796-1) $ kitchen verify
