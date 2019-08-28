@@ -45,5 +45,4 @@ suites:
       hosts: ansible-centos-7.6.1810-x86_64
       require_ansible_repo: true
       playbook: vault-server.yml
-      # ansible_vault_password_file: [".tC_vault_pass",".kitchenCI",".vault_pass"]
 ...
