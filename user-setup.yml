@@ -17,8 +17,8 @@
 
 - name: Create {{ user }} data directory
   file:
-    path=/var/lib/{{ user }}
-    state=directory
-    owner={{ user }}
-    group={{ user }}
-    mode=0755
+    path: "/var/lib/{{ user }}"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0755
