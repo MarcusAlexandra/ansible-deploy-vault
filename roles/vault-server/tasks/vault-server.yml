@@ -2,10 +2,10 @@
 - name: set_fact for localhost
   tags: always
   set_fact:
-    env: "{{ ansible_hostname.split('utru')[1] }}"
+    env: "{{ ansible_hostname.split('usctvl')[1] }}"
     env0: "{{ ansible_hostname.split('tst')[1] }}"
-    local_env: "{{ ansible_hostname.split('utru(tst|dev|qa|prd)') }}"
-  when: ansible_hostname is search('utru(tst|dev|qa|prd)')
+    local_env: "{{ ansible_hostname.split('usctvl(tst|dev|qa|prd)') }}"
+  when: ansible_hostname is search('usctvl(tst|dev|qa|prd)')
 
 - debug:
     msg: "Vault Server : {{ env }} {{env0}} HostName is {{ local_env }}"
@@ -33,15 +33,12 @@
   get_url:
     url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
     dest: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
-    # checksum: "sha1:a79bb68f0ebe43b8c55d91ac58950e0c44aa0310"
-    #when: not TCdir.stat.exists
 
 - name: Extract
   unarchive:
     src: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
     dest: "/usr/bin"
     copy: no
-  #when: not TCdir.stat.exists
 
 - name: Create Vault Server Dirs
   file:
@@ -86,7 +83,6 @@
 
 - name: Initialize the vault
   shell: vault operator init -key-shares=5 -key-threshold=3 -format json
-  # shell: vault operator init -address=http://10.13.3.10:8200 > /etc/vault/init.file
   environment:
     VAULT_ADDR: "http://10.13.3.10:8200"
   ignore_errors: true
@@ -150,15 +146,4 @@
   with_items: "{{ vault_init_parsed |json_query('root_token')}}"
   register: vaultLogin
 
-# - debug:
-#     msg: "{{ vaultLogin.rc }}"
-
-# - name: Enable Vault Logging
-#   shell: vault audit enable file file_path="{{ item }}"
-#   with_items:
-#     - /var/log/vault/logs/audit.log
-#   when: 'vaultLogin.rc == 0'
-
-  # notify:
-  #   - service restart vault
 ...
