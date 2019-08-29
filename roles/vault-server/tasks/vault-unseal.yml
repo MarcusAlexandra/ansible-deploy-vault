@@ -1,0 +1,29 @@
+---
+- name: Check if Vault is Sealed
+  shell: vault status | grep -i sealed
+  ignore_errors: true
+  args:
+    warn: true
+  register: vaultSealStatus
+
+- debug:
+    msg: "{{ vaultSealStatus.stdout.split()[1] }}"
+
+- name: Get Unseal Keys
+  shell: cat /etc/vault/initfile
+  ignore_errors: true
+  register: unsealKeys
+
+- debug:
+    msg: "{{ unsealKeys.stdout }}"
+
+- name: Get simple value.
+  set_fact:
+    unsealHexKeys: "{{ (unsealKeys.stdout | from_json).unseal_keys_hex }}"
+    unsealRootKey: "{{ (unsealKeys.stdout | from_json).root_token }}"
+
+- debug:
+    msg: "{{ unsealHexKeys }}"
+
+- debug:
+    msg: "{{ unsealRootKey }}"

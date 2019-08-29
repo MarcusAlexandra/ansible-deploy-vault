@@ -44,6 +44,9 @@
   file:
     path: "{{ item}}"
     state: directory
+    owner: "{{ vault_user }}"
+    group: "{{ vault_user }}"
+    mode: 0755
   with_items:
     - /etc/vault
     - /apps/data/vault
@@ -54,10 +57,11 @@
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: "{{ item.mode }}"
-    owner: root
-    group: root
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
   with_items:
-    - { src: 'config.json', dest: '/etc/vault/config.json', owner: 'root', group: 'root', mode: '0640' }
+    - { src: 'config.json', dest: '/etc/vault/config.json', mode: '0640' }
+    # - { src: 'config.json', dest: '/etc/vault/config.json', owner: 'root', group: 'root', mode: '0640' }
 
 - name: service | {{ item }}
   service:

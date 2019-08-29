@@ -1,0 +1,21 @@
+---
+- name: Add group {{ user }}
+  group:
+    name: "{{ vault_user }}"
+    gid: "{{ vault_user_id }}"
+    state: present
+
+- name: Add user {{ user }}
+  user:
+    name: "{{ vault_user }}"
+    uid: "{{ vault_user_id }}"
+    group: "{{ vault_group }}"
+    password: "{{ vault_passwd }}"
+    home: /home/{{ vault_user }}
+    shell: /bin/bash
+    skeleton: /etc/skel
+    createhome: yes
+    tags: [ 'vault_user', 'vault_installdir'
+
+
+...
