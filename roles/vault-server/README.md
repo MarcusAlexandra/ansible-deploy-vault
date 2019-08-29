@@ -16,37 +16,6 @@ Playbook assumes the archived image has been uploaded to Sonatype Nexus
 export VAULT_ADDR=http://10.13.3.10:8200
 echo "export VAULT_ADDR=http://10.13.3.10:8200" >> ~/.bashrc
 
-  See:
-  [root@usctvlvault01v ~]# vault --help
-  Usage: vault <command> [args]
-
-  Common commands:
-      read        Read data and retrieves secrets
-      write       Write data, configuration, and secrets
-      delete      Delete secrets and configuration
-      list        List data or secrets
-      login       Authenticate locally
-      agent       Start a Vault agent
-      server      Start a Vault server
-      status      Print seal and HA status
-      unwrap      Unwrap a wrapped secret
-
-  Other commands:
-      audit          Interact with audit devices
-      auth           Interact with auth methods
-      kv             Interact with Vault's Key-Value storage
-      lease          Interact with leases
-      namespace      Interact with namespaces
-      operator       Perform operator-specific tasks
-      path-help      Retrieve API help for paths
-      plugin         Interact with Vault plugins and catalog
-      policy         Interact with policies
-      print          Prints runtime configurations
-      secrets        Interact with secrets engines
-      ssh            Initiate an SSH session
-      token          Interact with tokens
-  [root@usctvlvault01v ~]#
-
 Unsealing the Vault
 ----------------------
 
@@ -201,4 +170,4 @@ Update with output from playbook
 
   Integration tests
   --------------------
-      lindsworthgarvey@curbStoneOps ~/curbStoneOps/ansiblePlaybook/develOpment/ansible-devops-unified (feature/DevOps-4796-1) $ kitchen verify
+      lindsworthgarvey@curbStoneOps ~/curbStoneOps/ansiblePlaybook/develOpment/ansible-deploy-vault $ kitchen verify
