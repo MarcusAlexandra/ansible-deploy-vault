@@ -21,7 +21,7 @@ Unsealing the Vault
 
 Unsealing the vault requires a minimum of three Unseal Keys. The Unseal Keys can be retrieved from Vault init.file
 
-     [root@usctvlvault01v ~]# cat /etc/vault/init.file
+     [root@usctvltstvlt01v ~]# cat /etc/vault/init.file
      Unseal Key 1: kIFvVPrcbMO5sCLC05AEqUTKqS08UoYOeNmvMv6o1pZb
      Unseal Key 2: Upb3qn7y4UJgKGHEB6gsSHphLLuwvVJxeBAUaWE3RoE8
      Unseal Key 3: uoLcgBHUG7UkKZhMqxJzBdgCplK+XVLq+e5Bn22wcQuG
@@ -40,12 +40,12 @@ Unsealing the vault requires a minimum of three Unseal Keys. The Unseal Keys can
 
      It is possible to generate new unseal keys, provided you have a quorum of
      existing unseal keys shares. See "vault operator rekey" for more information.
-     [root@usctvlvault01v ~]#
+     [root@usctvltstvlt01v ~]#
 
 
 To Unseal the Vault, having gotten the Unseal Keys from the Vault init.file, use the "vault operator" command as follows:
 
-     [root@usctvlvault01v ~]# vault operator unseal kIFvVPrcbMO5sCLC05AEqUTKqS08UoYOeNmvMv6o1pZb
+     [root@usctvltstvlt01v ~]# vault operator unseal kIFvVPrcbMO5sCLC05AEqUTKqS08UoYOeNmvMv6o1pZb
      Key                Value
      ---                -----
      Seal Type          shamir
@@ -57,7 +57,7 @@ To Unseal the Vault, having gotten the Unseal Keys from the Vault init.file, use
      Unseal Nonce       911eceee-1d46-8dd1-2d04-9206f061cee0
      ersion            1.1.4
      HA Enabled         false
-     [root@usctvlvault01v ~]# vault operator unseal Upb3qn7y4UJgKGHEB6gsSHphLLuwvVJxeBAUaWE3RoE8
+     [root@usctvltstvlt01v ~]# vault operator unseal Upb3qn7y4UJgKGHEB6gsSHphLLuwvVJxeBAUaWE3RoE8
      Key                Value
      ---                -----
      Seal Type          shamir
@@ -69,7 +69,7 @@ To Unseal the Vault, having gotten the Unseal Keys from the Vault init.file, use
      Unseal Nonce       911eceee-1d46-8dd1-2d04-9206f061cee0
      Version            1.1.4
      HA Enabled         false
-     [root@usctvlvault01v ~]# vault operator unseal uoLcgBHUG7UkKZhMqxJzBdgCplK+XVLq+e5Bn22wcQuG
+     [root@usctvltstvlt01v ~]# vault operator unseal uoLcgBHUG7UkKZhMqxJzBdgCplK+XVLq+e5Bn22wcQuG
      Key             Value
      ---             -----
      Seal Type       shamir
@@ -81,7 +81,7 @@ To Unseal the Vault, having gotten the Unseal Keys from the Vault init.file, use
      Cluster Name    vault-cluster-a776ed8b
      Cluster ID      f8f1fe85-4abb-9d7a-6703-7f0a914f3ac3
      HA Enabled      false
-     [root@usctvlvault01v ~]#
+     [root@usctvltstvlt01v ~]#
 
 
 
@@ -90,7 +90,7 @@ Vault Login
 
 Using the Vault CLI, login to the Vault using the "Initial Root Token"
 
-  [root@usctvlvault01v ~]# vault login
+  [root@usctvltstvlt01v ~]# vault login
   Token (will be hidden):
   Success! You are now authenticated. The token information displayed below
   is already stored in the token helper. You do NOT need to run "vault login"
@@ -105,13 +105,13 @@ Using the Vault CLI, login to the Vault using the "Initial Root Token"
   token_policies       ["root"]
   identity_policies    []
   policies             ["root"]
-  [root@usctvlvault01v ~]#
+  [root@usctvltstvlt01v ~]#
 
 Once logged in - you're able to interact with the Vault
 
-  [root@usctvlvault01v ~]# vault auth enable approle
+  [root@usctvltstvlt01v ~]# vault auth enable approle
   Success! Enabled approle auth method at: approle/
-  [root@usctvlvault01v ~]#
+  [root@usctvltstvlt01v ~]#
 
 Requirements
 ------------

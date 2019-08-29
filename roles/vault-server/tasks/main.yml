@@ -9,3 +9,4 @@
 - import_tasks: firewalld.yml
 - import_tasks: service.yml
 - import_tasks: vault-server.yml
+- import_tasks: vault-unseal.yml

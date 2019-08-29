@@ -1,0 +1,6 @@
+---
+- name: wrapper playbook for kitchen testing "vault-server" role
+  hosts: localhost
+  roles:
+    - vault-server
+...

@@ -33,7 +33,7 @@ suites:
 
   - name: vault-server
     driver:
-      vm_hostname: usctvlvault01v.curbstoneops.com
+      vm_hostname: usctvltstvlt01v.curbstoneops.com
       customize:
         cpus: 1
         memory: 1048

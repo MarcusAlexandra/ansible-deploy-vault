@@ -39,11 +39,24 @@
     src: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
     dest: "/usr/bin"
     copy: no
+  register: unarchiveVault
+  tags: unarchiveVault
+
+- debug:
+    msg: "{{ unarchiveVault }}"
+
+- name: Remove archive
+  file:
+    path: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
+    state: absent
 
 - name: Create Vault Server Dirs
   file:
     path: "{{ item}}"
     state: directory
+    owner: "{{ vault_user }}"
+    group: "{{ vault_user }}"
+    mode: 0755
   with_items:
     - /etc/vault
     - /apps/data/vault
@@ -54,10 +67,10 @@
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: "{{ item.mode }}"
-    owner: root
-    group: root
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
   with_items:
-    - { src: 'config.json', dest: '/etc/vault/config.json', owner: 'root', group: 'root', mode: '0640' }
+    - { src: 'config.json', dest: '/etc/vault/config.json', mode: '0640' }
 
 - name: service | {{ item }}
   service:
@@ -91,9 +104,6 @@
   when: "vaultStatus.stdout.split()[1] != 'true'"
   register: vaultInitResult
 
-# - debug:
-#     msg: "{{ vaultInitResult }}"
-
 #-------------------------------------------------------------------------------
 #
 #  Check the Vault Status
@@ -125,25 +135,36 @@
   set_fact:
     vault_init_parsed: "{{ vaultInitResult.stdout | from_json }}"
 
-# - debug:
-#     msg: "{{ vault_init_parsed |json_query('unseal_keys_hex')}}"
-
-- debug:
-    msg: "{{ vault_init_parsed |json_query('root_token')}}"
+- name: Write Vault Values to file
+  lineinfile:
+    create: yes
+    dest: /etc/vault/initfile.json
+    state: present
+    line: "{{ vault_init_parsed | to_json }}"
 
 - name: Unseal Vault
   shell: |
-    vault operator unseal {{ item }}
+    vault operator unseal "{{ item }}"
   environment:
     VAULT_ADDR: "http://10.13.3.10:8200"
+  no_log: true
   with_items: "{{ vault_init_parsed |json_query('unseal_keys_hex[*]')}}"
 
 - name: Vault login
   shell: |
-    vault login {{ item }}
+    vault login "{{ vault_init_parsed |json_query('root_token')}}"
   environment:
     VAULT_ADDR: "http://10.13.3.10:8200"
-  with_items: "{{ vault_init_parsed |json_query('root_token')}}"
+  ignore_errors: true
+  args:
+    warn: true
   register: vaultLogin
 
+- name: Enable Vault Logging
+  shell: vault audit enable file file_path="{{ item }}"
+  environment:
+    VAULT_ADDR: "http://10.13.3.10:8200"
+  with_items:
+    - /var/log/vault/logs/audit.log
+  when: "vaultLogin.changed == true"
 ...

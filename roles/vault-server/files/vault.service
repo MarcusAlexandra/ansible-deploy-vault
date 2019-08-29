@@ -6,6 +6,8 @@ After=network-online.target
 ConditionFileNotEmpty=/etc/vault/config.json
 
 [Service]
+User=vault
+Group=vault
 EnvironmentFile=-/etc/sysconfig/vault
 Environment=GOMAXPROCS=2
 Restart=on-failure
