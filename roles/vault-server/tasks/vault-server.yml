@@ -104,10 +104,10 @@
   when: "vaultStatus.stdout.split()[1] != 'true'"
   register: vaultInitResult
 
-#-------------------------------------------------------------------------------
-#
-#  Check the Vault Status
-#
+# - debug:
+#     msg: "{{ vaultInitResult }}"
+
+
 - name: Check Vault Status
   shell: vault status -address=http://10.13.3.10:8200 | grep -i initialized
   ignore_errors: true
@@ -115,8 +115,8 @@
     warn: false
   register: vaultStatus
 
-- debug:
-    msg: "{{ vaultStatus.stdout.split()[1] }}"
+# - debug:
+#     msg: "{{ vaultStatus.stdout.split()[1] }}"
 
 #-------------------------------------------------------------------------------
 # Extend ability to use the mlock syscall without running the process as root to
@@ -128,9 +128,6 @@
     capability: cap_ipc_lock+ep
     state: present
 
-- debug:
-    msg: "{{ vaultInitResult.stdout }}"
-
 - name: Parse output of vault init
   set_fact:
     vault_init_parsed: "{{ vaultInitResult.stdout | from_json }}"
@@ -138,33 +135,33 @@
 - name: Write Vault Values to file
   lineinfile:
     create: yes
-    dest: /etc/vault/initfile.json
+    dest: /etc/vault/initfile
     state: present
+    # line: "{{ vaultInitResult.stdout }}.json"
     line: "{{ vault_init_parsed | to_json }}"
 
 - name: Unseal Vault
   shell: |
-    vault operator unseal "{{ item }}"
+    vault operator unseal {{ item }}
   environment:
     VAULT_ADDR: "http://10.13.3.10:8200"
-  no_log: true
   with_items: "{{ vault_init_parsed |json_query('unseal_keys_hex[*]')}}"
 
 - name: Vault login
   shell: |
-    vault login "{{ vault_init_parsed |json_query('root_token')}}"
+    vault login {{ item }}
   environment:
     VAULT_ADDR: "http://10.13.3.10:8200"
-  ignore_errors: true
-  args:
-    warn: true
+  with_items: "{{ vault_init_parsed |json_query('root_token')}}"
   register: vaultLogin
+
+- debug:
+    msg: "{{ vaultLogin.changed }}"
 
 - name: Enable Vault Logging
   shell: vault audit enable file file_path="{{ item }}"
-  environment:
-    VAULT_ADDR: "http://10.13.3.10:8200"
   with_items:
     - /var/log/vault/logs/audit.log
-  when: "vaultLogin.changed == true"
+  when: "vaultLogin.changed == 'true'"
+
 ...
