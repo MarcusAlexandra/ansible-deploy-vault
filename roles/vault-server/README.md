@@ -21,7 +21,7 @@ Unsealing the Vault
 
 Unsealing the vault requires a minimum of three Unseal Keys. The Unseal Keys can be retrieved from Vault init.file
 
-     [root@usctvltstvlt01v ~]# cat /etc/vault/init.file
+     [root@utrutstvault01v ~]# cat /etc/vault/init.file
      Unseal Key 1: kIFvVPrcbMO5sCLC05AEqUTKqS08UoYOeNmvMv6o1pZb
      Unseal Key 2: Upb3qn7y4UJgKGHEB6gsSHphLLuwvVJxeBAUaWE3RoE8
      Unseal Key 3: uoLcgBHUG7UkKZhMqxJzBdgCplK+XVLq+e5Bn22wcQuG
@@ -40,12 +40,12 @@ Unsealing the vault requires a minimum of three Unseal Keys. The Unseal Keys can
 
      It is possible to generate new unseal keys, provided you have a quorum of
      existing unseal keys shares. See "vault operator rekey" for more information.
-     [root@usctvltstvlt01v ~]#
+     [root@utrutstvault01v ~]#
 
 
 To Unseal the Vault, having gotten the Unseal Keys from the Vault init.file, use the "vault operator" command as follows:
 
-     [root@usctvltstvlt01v ~]# vault operator unseal kIFvVPrcbMO5sCLC05AEqUTKqS08UoYOeNmvMv6o1pZb
+     [root@utrutstvault01v ~]# vault operator unseal kIFvVPrcbMO5sCLC05AEqUTKqS08UoYOeNmvMv6o1pZb
      Key                Value
      ---                -----
      Seal Type          shamir
@@ -55,9 +55,9 @@ To Unseal the Vault, having gotten the Unseal Keys from the Vault init.file, use
      Threshold          3
      Unseal Progress    1/3
      Unseal Nonce       911eceee-1d46-8dd1-2d04-9206f061cee0
-     ersion            1.1.4
+     Version            1.1.4
      HA Enabled         false
-     [root@usctvltstvlt01v ~]# vault operator unseal Upb3qn7y4UJgKGHEB6gsSHphLLuwvVJxeBAUaWE3RoE8
+     [root@utrutstvault01v ~]# vault operator unseal Upb3qn7y4UJgKGHEB6gsSHphLLuwvVJxeBAUaWE3RoE8
      Key                Value
      ---                -----
      Seal Type          shamir
@@ -69,7 +69,7 @@ To Unseal the Vault, having gotten the Unseal Keys from the Vault init.file, use
      Unseal Nonce       911eceee-1d46-8dd1-2d04-9206f061cee0
      Version            1.1.4
      HA Enabled         false
-     [root@usctvltstvlt01v ~]# vault operator unseal uoLcgBHUG7UkKZhMqxJzBdgCplK+XVLq+e5Bn22wcQuG
+     [root@utrutstvault01v ~]# vault operator unseal uoLcgBHUG7UkKZhMqxJzBdgCplK+XVLq+e5Bn22wcQuG
      Key             Value
      ---             -----
      Seal Type       shamir
@@ -81,7 +81,7 @@ To Unseal the Vault, having gotten the Unseal Keys from the Vault init.file, use
      Cluster Name    vault-cluster-a776ed8b
      Cluster ID      f8f1fe85-4abb-9d7a-6703-7f0a914f3ac3
      HA Enabled      false
-     [root@usctvltstvlt01v ~]#
+     [root@utrutstvault01v ~]#
 
 
 
@@ -90,7 +90,7 @@ Vault Login
 
 Using the Vault CLI, login to the Vault using the "Initial Root Token"
 
-  [root@usctvltstvlt01v ~]# vault login
+  [root@utrutstvault01v ~]# vault login
   Token (will be hidden):
   Success! You are now authenticated. The token information displayed below
   is already stored in the token helper. You do NOT need to run "vault login"
@@ -105,13 +105,42 @@ Using the Vault CLI, login to the Vault using the "Initial Root Token"
   token_policies       ["root"]
   identity_policies    []
   policies             ["root"]
-  [root@usctvltstvlt01v ~]#
+  [root@utrutstvault01v ~]#
 
 Once logged in - you're able to interact with the Vault
 
-  [root@usctvltstvlt01v ~]# vault auth enable approle
+  [root@utrutstvault01v ~]# vault auth enable approle
   Success! Enabled approle auth method at: approle/
-  [root@usctvltstvlt01v ~]#
+  [root@utrutstvault01v ~]#
+
+# yum install jq
+
+  [root@utrutstvault01v ~]# cat /etc/vault/initfile | jq .
+  {
+    "unseal_shares": 5,
+    "unseal_threshold": 3,
+    "unseal_keys_hex": [
+      "12b4f4bdae5c168891cd0f6c9a9e957bd160bdc0f2d269bc517132c68890496be1",
+      "82ddb74c39017ba636203231df9ba4d08c4bfee2d4ce168c69f0bf37de4642289d",
+      "e5d3a1fcd2a5deb3998093289341353bd15d6ae6d6312dbbbb84c68263e83426f2",
+      "197859760f1479f236e5e3f3ce9d1dad24073c36acf102458296dc716b4998747c",
+      "9d75d818373a771cb967194eb2e70039571b76b35e6a229a09632439941047ec8b"
+    ],
+    "recovery_keys_hex": [],
+    "root_token": "s.nc9SRbOoBMvbQ2Hn0buzeTlp",
+    "recovery_keys_b64": [],
+    "recovery_keys_threshold": 3,
+    "unseal_keys_b64": [
+      "ErT0va5cFoiRzQ9smp6Ve9FgvcDy0mm8UXEyxoiQSWvh",
+      "gt23TDkBe6Y2IDIx35uk0IxL/uLUzhaMafC/N95GQiid",
+      "5dOh/NKl3rOZgJMok0E1O9FdaubWMS27u4TGgmPoNCby",
+      "GXhZdg8UefI25ePzzp0drSQHPDas8QJFgpbccWtJmHR8",
+      "nXXYGDc6dxy5ZxlOsucAOVcbdrNeaiKaCWMkOZQQR+yL"
+    ],
+    "recovery_keys_shares": 5
+  }
+  [root@utrutstvault01v ~]#
+
 
 Requirements
 ------------
@@ -170,4 +199,4 @@ Update with output from playbook
 
   Integration tests
   --------------------
-      lindsworthgarvey@curbStoneOps ~/curbStoneOps/ansiblePlaybook/develOpment/ansible-deploy-vault $ kitchen verify
+      lindsworth_garvey@SHE-MB1036 ~/ssiRepo/ansiblePlaybook/develOpment/ansible-devops-unified (feature/DevOps-4796-1) $ kitchen verify

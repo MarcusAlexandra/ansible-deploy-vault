@@ -34,7 +34,7 @@
     url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
     dest: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
 
-- name: Extract
+- name: Extract Vault Archive
   unarchive:
     src: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
     dest: "/usr/bin"
