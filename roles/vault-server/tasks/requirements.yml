@@ -1,0 +1,10 @@
+---
+- name: Install Vault Server Dependencies
+  yum:
+    name:
+      - perl-libwww-perl
+      - epel-release
+      - sysstat
+      - unzip
+      - jq
+    state: present
