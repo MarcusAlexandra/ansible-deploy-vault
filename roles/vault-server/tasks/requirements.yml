@@ -1,0 +1,35 @@
+---
+  #
+  # file: roles/vault/tasks/requirements.yml
+  #
+- name: Install common packages with yum
+  yum:
+    name:
+      - bc
+      - sysstat
+      - iptraf
+      - yum-utils
+      - epel-release
+      - logrotate
+      - unzip
+    state: present
+
+- name: Discover if [/etc/yum.repos.d/rsyslog.repo] exists
+  stat:
+    path: /etc/yum.repos.d/rsyslog.repo
+  register: rsyslogRepo
+
+- name: Add Rsyslog repo
+  shell: yum-config-manager --add-repo http://rpms.adiscon.com/v8-stable/rsyslog.repo
+  ignore_errors: true
+  args:
+    warn: false
+  register: addRsyslogRepo
+  when: not rsyslogRepo.stat.exists
+
+- name: Install Vault Server Dependencies
+  yum:
+    name:
+      - perl-libwww-perl
+      - jq
+    state: present

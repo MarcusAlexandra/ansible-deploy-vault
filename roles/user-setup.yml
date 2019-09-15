@@ -1,0 +1,25 @@
+---
+
+  # TODO:
+  #   Use role name to make supply user createion specs - {{ role_path|basename }}"
+
+- name: Add group {{ user }}
+  group:
+    name: "{{ role_user }}"
+    gid: "{{ role_user_id }}"
+    state: present
+
+- name: Add user {{ user }}
+  user:
+    name: "{{ role_user }}"
+    uid: "{{ role_user_id }}"
+    group: "{{ role_group }}"
+    password: "{{ role_passwd }}"
+    home: /home/{{ role_user }}
+    shell: /bin/bash
+    skeleton: /etc/skel
+    createhome: yes
+    tags: [ 'role_user', 'role_installdir'
+
+
+...

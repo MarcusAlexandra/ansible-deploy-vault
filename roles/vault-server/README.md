@@ -142,6 +142,27 @@ Once logged in - you're able to interact with the Vault
   [root@utrutstvault01v ~]#
 
 
+Using jq to extract specific values form json
+
+  [root@usctvltstvlt01v ~]# vault status -format=json | jq
+  {
+    "type": "shamir",
+    "initialized": true,
+    "sealed": false,
+    "t": 3,
+    "n": 5,
+    "progress": 0,
+    "nonce": "",
+    "version": "1.1.4",
+    "migration": false,
+    "cluster_name": "vault-cluster-8008992f",
+    "cluster_id": "a615554d-4d61-2366-0ec3-cfa7f8e6d26a",
+    "recovery_seal": false
+  }
+  [root@usctvltstvlt01v ~]# vault status -format=json | jq -r '.initialized'
+  true
+  [root@usctvltstvlt01v ~]#
+
 Requirements
 ------------
 There are no pre-requisites for executing the playbook beyond those listed below: (Based on minimal workstation configuration)
