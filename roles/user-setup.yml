@@ -1,7 +1,14 @@
 ---
-
+  #
   # TODO:
   #   Use role name to make supply user createion specs - {{ role_path|basename }}"
+
+- name: Set fact role-name
+  set_fact:
+    role_user: "{{ role_path|basename }}"
+
+- debug:
+    msg: "{{ role_user }}"
 
 - name: Add group {{ user }}
   group:
@@ -19,7 +26,6 @@
     shell: /bin/bash
     skeleton: /etc/skel
     createhome: yes
-    tags: [ 'role_user', 'role_installdir'
-
+    tags: [ 'role_user', 'role_installdir' ]
 
 ...
