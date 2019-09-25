@@ -1,0 +1,4 @@
+---
+- import_tasks: get-ansible-vault-key.yml
+
+- import_tasks: create-user.yml

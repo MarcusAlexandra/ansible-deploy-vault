@@ -11,11 +11,11 @@
     uid: "{{ vault_user_id }}"
     group: "{{ vault_group }}"
     password: "{{ vault_passwd }}"
-    home: /home/{{ vault_user }}
+    home: "/apps/{{ vault_user }}"
     shell: /bin/bash
     skeleton: /etc/skel
-    createhome: yes
-    tags: [ 'vault_user', 'vault_installdir'
+    create_home: yes
+  tags: [ 'vault_user', 'vault_installdir' ]
 
 
 ...

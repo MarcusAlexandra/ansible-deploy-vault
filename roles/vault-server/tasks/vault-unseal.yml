@@ -30,6 +30,9 @@
 - debug:
     msg: "{{ unsealRootKey }}"
 
+- debug: 
+    msg: "Unseal Status {{ vaultSealStatus }}" 
+    
 - name: Unseal Vault
   shell: |
     vault operator unseal "{{ item }}"
@@ -38,7 +41,8 @@
   no_log: true
   with_items:
     - "{{ unsealHexKeys }}"
-
+  
+  
 - name: Vault login
   shell: |
     vault login "{{ unsealRootKey }}"

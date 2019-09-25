@@ -5,12 +5,16 @@
 - import_tasks: requirements.yml
   tags: ['installDependencies', 'installRequirements']
 
+- import_tasks: user-setup.yml
+  tags: ['createVaultUser', 'userSetup']
+
 - import_tasks: firewalld.yml
   tags: ['configureFirewall']
 
 - import_tasks: service.yml
   tags: ['vaultService']
+
 - import_tasks: vault-server.yml
 
-- import_tasks: vault-unseal.yml
-  tags: ['unsealVault', 'unseal']
+# - import_tasks: vault-unseal.yml
+#   tags: ['unsealVault', 'unseal']
