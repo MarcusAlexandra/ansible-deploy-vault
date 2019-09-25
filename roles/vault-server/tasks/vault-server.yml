@@ -2,10 +2,10 @@
 - name: set_fact for localhost
   tags: always
   set_fact:
-    env: "{{ ansible_hostname.split('usctvl')[1] }}"
+    env: "{{ ansible_hostname.split('utru')[1] }}"
     env0: "{{ ansible_hostname.split('tst')[1] }}"
-    local_env: "{{ ansible_hostname.split('usctvl(tst|dev|qa|prd)') }}"
-  when: ansible_hostname is search('usctvl(tst|dev|qa|prd)')
+    local_env: "{{ ansible_hostname.split('utru(tst|dev|qa|prd)') }}"
+  when: ansible_hostname is search('utru(tst|dev|qa|prd)')
 
 - debug:
     msg: "Vault Server : {{ env }} {{env0}} HostName is {{ local_env }}"
@@ -33,44 +33,32 @@
   get_url:
     url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
     dest: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
+    # checksum: "sha1:a79bb68f0ebe43b8c55d91ac58950e0c44aa0310"
 
 - name: Extract Vault Archive
   unarchive:
     src: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
     dest: "/usr/bin"
     copy: no
-  register: unarchiveVault
-  tags: unarchiveVault
-
-- debug:
-    msg: "{{ unarchiveVault }}"
-
-- name: Remove archive
-  file:
-    path: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
-    state: absent
 
 - name: Create Vault Server Dirs
   file:
     path: "{{ item}}"
     state: directory
-    owner: "{{ vault_user }}"
-    group: "{{ vault_user }}"
-    mode: 0755
   with_items:
     - /etc/vault
     - /apps/data/vault
-    - /var/log/vault/logs
+    - /var/log/vault
 
 - name: copy Vault Server Configs
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: "{{ item.mode }}"
-    owner: "{{ vault_user }}"
-    group: "{{ vault_group }}"
+    owner: root
+    group: root
   with_items:
-    - { src: 'config.json', dest: '/etc/vault/config.json', mode: '0640' }
+    - { src: 'config.json', dest: '/etc/vault/config.json', owner: 'root', group: 'root', mode: '0640' }
 
 - name: service | {{ item }}
   service:
@@ -87,8 +75,12 @@
     line: export VAULT_ADDR=http://10.13.3.10:8200
     insertbefore: "^export PATH"
 
+#-------------------------------------------------------------------------------
+#
+#  Check the Vault Status
+#
 - name: Check Vault Status
-  shell: vault status -address=http://10.13.3.10:8200 | grep -i initialized
+  shell: vault status -address=http://10.13.3.10:8200 -format json | jq -r '.initialized'
   ignore_errors: true
   args:
     warn: false
@@ -101,22 +93,23 @@
   ignore_errors: true
   args:
     warn: true
-  when: "vaultStatus.stdout.split()[1] != 'true'"
+  when: "vaultStatus.stdout != 'true'"
   register: vaultInitResult
 
-# - debug:
-#     msg: "{{ vaultInitResult }}"
+- debug:
+    msg: "Vault Init Result {{ vaultInitResult }}"
 
 
 - name: Check Vault Status
-  shell: vault status -address=http://10.13.3.10:8200 | grep -i initialized
+  shell: vault status -address=http://10.13.3.10:8200 -format json | jq -r '.initialized'
   ignore_errors: true
   args:
     warn: false
   register: vaultStatus
 
-# - debug:
-#     msg: "{{ vaultStatus.stdout.split()[1] }}"
+- debug:
+    msg: "{{ vaultStatus.stdout }}"
+    # msg: "{{ vaultStatus.stdout.split()[1] }}"
 
 #-------------------------------------------------------------------------------
 # Extend ability to use the mlock syscall without running the process as root to
@@ -137,8 +130,13 @@
     create: yes
     dest: /etc/vault/initfile
     state: present
-    # line: "{{ vaultInitResult.stdout }}.json"
-    line: "{{ vault_init_parsed | to_json }}"
+    line: "{{ vaultInitResult.stdout }}.json"
+    # line: "{{ vaultInitParsed | to_json }}"
+# - debug:
+#     msg: "{{ vault_init_parsed |json_query('unseal_keys_hex')}}"
+#
+# - debug:
+#     msg: "{{ vault_init_parsed |json_query('root_token')}}"
 
 - name: Unseal Vault
   shell: |
@@ -158,10 +156,6 @@
 - debug:
     msg: "{{ vaultLogin.changed }}"
 
-- name: Enable Vault Logging
-  shell: vault audit enable file file_path="{{ item }}"
-  with_items:
-    - /var/log/vault/logs/audit.log
-  when: "vaultLogin.changed == 'true'"
+
 
 ...

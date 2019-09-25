@@ -1,0 +1,28 @@
+---
+# 1. Add Users
+#    Ex. Add a user for retrieving ansible values
+# 2. Add Policy/Capabilities to Users
+#    Ex.
+#        i.  Allow user to retireve kv's from vault via defined policies
+#        ii. Alloe user to retrieve versioned kv's from vault based on asserted environments
+#            (Ex. tst|dev|qa|prod)
+
+- name: Enable Vault Logging
+  shell: vault audit enable file file_path="{{ item }}"
+  with_items:
+    - /var/log/vault/logs/audit.log
+  when: "vaultLogin.changed == 'true'"
+
+- name: Configure Vault Users
+  uri:
+    url: "{{ vaultUrl }}"
+    method: GET
+    headers:
+    Content-Type: "application/json"
+    X-Vault-Token: '{{ unSealToken.stdout }}'
+    status_code: 200
+    force_basic_auth: yes
+  register: ansibleVault
+
+- debug:
+    msg: "{{ ansibleVault.json.data.value }}"

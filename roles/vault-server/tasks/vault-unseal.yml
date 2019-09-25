@@ -1,51 +1,64 @@
 ---
+# 1. Check is system service is Running
+# 2. If running, check if /etc/vault/initfile exists
+
+- name: Determine Vault Service State
+  service_facts:
+
+- debug:
+    var: ansible_facts.services['vault.service'].state
+
 - name: Check if Vault is Sealed
-  shell: vault status | grep -i sealed
+  shell: vault status -format json | jq -r '.sealed'
   environment:
     VAULT_ADDR: "http://10.13.3.10:8200"
   ignore_errors: true
   args:
     warn: true
+  when: ansible_facts.services['vault.service'].state == 'running'
   register: vaultSealStatus
 
-- debug:
-    msg: "{{ vaultSealStatus.stdout.split()[1] }}"
+- name: Check if Vault InitFile exists
+  stat:
+    path: "/etc/vault/initfile"
+  register: vaultInitFile
 
-- name: Get Unseal Keys
-  shell: cat /etc/vault/initfile
-  ignore_errors: true
-  register: unsealKeys
-
-- debug:
-    msg: "{{ unsealKeys.stdout }}"
-
-- name: Get simple value.
-  set_fact:
-    unsealHexKeys: "{{ (unsealKeys.stdout | from_json).unseal_keys_hex }}"
-    unsealRootKey: "{{ (unsealKeys.stdout | from_json).root_token }}"
-
-- debug:
-    msg: "{{ unsealHexKeys }}"
-
-- debug:
-    msg: "{{ unsealRootKey }}"
-
-- name: Unseal Vault
-  shell: |
-    vault operator unseal "{{ item }}"
-  environment:
-    VAULT_ADDR: "http://10.13.3.10:8200"
+- name: Read values from [/etc/vault/initfile]
+  debug:
+    msg="{{lookup('file', '/etc/vault/initfile') }}"
   no_log: true
-  with_items:
-    - "{{ unsealHexKeys }}"
+  register: unsealKeys
+  when: ( vaultSealStatus.stdout == 'true' and vaultInitFile.stat.exists )
 
-- name: Vault login
-  shell: |
-    vault login "{{ unsealRootKey }}"
-  environment:
-    VAULT_ADDR: "http://10.13.3.10:8200"
-  ignore_errors: true
-  args:
-    warn: true
-  register: vaultLogin
-...
+- debug:
+    msg: "VaultSeal Status ==> {{ vaultSealStatus}} VaultInitFile Exists ==> {{ vaultInitFile.stat.exists }}"
+
+- name: Define Vault Unseal [Keys/Login Token]
+  set_fact:
+    unsealHexKeys: "{{ unsealKeys.msg.unseal_keys_hex }}"
+    unsealRootKey: "{{  unsealKeys.msg.root_token }}"
+  when: ( vaultSealStatus.stdout == 'true' and unsealKeys.stdout | length != 0)
+
+# - name: Unseal Vault
+#   shell: |
+#     vault operator unseal "{{ item }}"
+#   environment:
+#     VAULT_ADDR: "http://10.13.3.10:8200"
+#   no_log: true
+#   with_items:
+#     - "{{ unsealHexKeys }}"
+#   when: vaultSealStatus.stdout == 'true'
+#
+#
+# - name: Vault login
+#   shell: |
+#     vault login "{{ unsealRootKey }}"
+#   environment:
+#     VAULT_ADDR: "http://10.13.3.10:8200"
+#   ignore_errors: true
+#   args:
+#     warn: true
+#   register: vaultLogin
+#   when: vaultSealStatus.stdout == 'true'
+#
+# ...
