@@ -4,25 +4,90 @@
 # 2. Add Policy/Capabilities to Users
 #    Ex.
 #        i.  Allow user to retireve kv's from vault via defined policies
-#        ii. Alloe user to retrieve versioned kv's from vault based on asserted environments
+#        ii. Allow user to retrieve versioned kv's from vault based on asserted environments
 #            (Ex. tst|dev|qa|prod)
 
-- name: Enable Vault Logging
-  shell: vault audit enable file file_path="{{ item }}"
-  with_items:
-    - /var/log/vault/logs/audit.log
-  when: "vaultLogin.changed == 'true'"
-
-- name: Configure Vault Users
-  uri:
-    url: "{{ vaultUrl }}"
-    method: GET
-    headers:
-    Content-Type: "application/json"
-    X-Vault-Token: '{{ unSealToken.stdout }}'
-    status_code: 200
-    force_basic_auth: yes
-  register: ansibleVault
+- name: Is Vault Unsealed
+     # vault status -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.sealed'
+  shell: |
+     vault status -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.sealed'
+  register: vaultSealed
 
 - debug:
-    msg: "{{ ansibleVault.json.data.value }}"
+    msg: "Task: Is Vault Unsealed: {{ vaultSealed.stdout }}"
+
+- name: Get vaultUnseal RootToken
+  shell: vault token lookup -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.data.id'
+  ignore_errors: true
+  args:
+    warn: false
+  environment:
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+  when: vaultSealed.stdout == 'false'
+  register: rootToken
+
+# - debug:
+#     msg: "Task: Get vaultUnseal rootToken: {{ rootToken.stdout }}"
+
+  # vault audit enable file -address="{{ vaultUrl }}:{{ vaultUrlPort }}" file_path=/var/log/vault/audit.log
+- name: Enable Vault Logging
+  become: yes
+  become_user: root
+  shell: |
+    vault audit enable file -address="{{ vaultUrl }}:{{ vaultUrlPort }}" file_path="{{ item }}"
+  ignore_errors: true
+  args:
+    warn: false
+  environment:
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+  with_items:
+    - /var/log/vault/audit.log
+  when: vaultSealed.stdout == 'false'
+
+- name: Enable Vault Audit
+  shell: |
+    vault audit enable syslog -address="{{ vaultUrl }}:{{ vaultUrlPort }}" tag="vault" facility="AUTH" mode="0600" format="json"
+  ignore_errors: true
+  args:
+    warn: false
+  environment:
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+  when: vaultSealed.stdout == 'false'
+
+- name: Enable Auth Methods [userpass approle]
+  shell: |
+    vault auth enable "{{ item }}"
+  ignore_errors: true
+  args:
+    warn: true
+  environment:
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+  with_items:
+    - userpass
+    - approle
+  register: vaultEnableUserpassAuth
+
+
+# - name: Configure Vault Users
+#   uri:
+#     url: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+#     method: GET
+#     headers:
+#       Content-Type: "application/json"
+#       X-Vault-Token: '{{ unSealToken.stdout }}'
+#     status_code: 200
+#     force_basic_auth: yes
+#   register: ansibleVault
+#
+# - debug:
+#     msg: "{{ ansibleVault.json.data.value }}"
+
+
+
+#
+
+#
+#
+#
+#
+# vault write auth/userpass/users/ssi-vault-svc policies=default password=ssi-vault-svc

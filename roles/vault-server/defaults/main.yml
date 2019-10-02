@@ -5,6 +5,10 @@ vault_home: "/apps/{{vault_user}}"
 vault_data: "{{ vault_home }}/data"
 vault_user_id: "1203"
 
-vault_version: "1.1.4"
-VAULT_ADDR: http://10.13.3.10:8200
+vault_version: "1.2.3"
+vaultUrl: http://10.13.3.10
+vaultUrlPort: 8200
 vault_checksum: "sha256:eb8d2461d0ca249c1f91005f878795998bdeafccfde0b9bae82343541ce65996"
+
+# home       =   /apps/data
+# vault_data =  /apps/vault/data

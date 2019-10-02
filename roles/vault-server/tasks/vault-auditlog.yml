@@ -1,0 +1,44 @@
+---
+- name: Check if Vault is Sealed
+  shell: |
+     vault status -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.sealed'
+  register: vaultSealed
+
+- debug:
+    msg: "Task: Is Vault Unsealed: {{ vaultSealed.stdout }}"
+
+- name: Get vaultUnseal RootToken
+  shell: vault token lookup -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.data.id'
+  ignore_errors: true
+  args:
+    warn: false
+  environment:
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+  when: vaultSealed.stdout == 'false'
+  register: rootToken
+
+- name: Enable Vault Logging
+  become: yes
+  become_user: root
+  shell: |
+    vault audit enable file -address="{{ vaultUrl }}:{{ vaultUrlPort }}" file_path="{{ item }}"
+  ignore_errors: true
+  args:
+    warn: false
+  environment:
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+  with_items:
+    - /var/log/vault/audit.log
+  when: vaultSealed.stdout == 'false'
+
+- name: Enable Vault Audit
+  shell: |
+    vault audit enable syslog -address="{{ vaultUrl }}:{{ vaultUrlPort }}" tag="vault" facility="AUTH" mode="0600" format="json"
+  ignore_errors: true
+  args:
+    warn: false
+  environment:
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+  when: vaultSealed.stdout == 'false'
+
+...

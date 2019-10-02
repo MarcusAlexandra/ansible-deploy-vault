@@ -2,7 +2,7 @@
   #
   # file: roles/vault/tasks/requirements.yml
   #
-- name: Install common packages with yum
+- name: Install required packages with yum
   yum:
     name:
       - bc

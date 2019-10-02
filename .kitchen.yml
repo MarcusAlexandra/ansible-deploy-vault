@@ -36,7 +36,7 @@ suites:
 
   - name: vault-server
     driver:
-      vm_hostname: utrutstvault01v.ssi.com
+      vm_hostname: usctvltstvlt01v.curbstoneops.com
       customize:
         cpus: 1
         memory: 1048
@@ -52,7 +52,7 @@ suites:
 
   - name: vault-client
     driver:
-      vm_hostname: utrutstvault02v.ssi.com
+      vm_hostname: usctvltstvlt02v.curbstoneops.com
       customize:
         cpus: 1
         memory: 1048

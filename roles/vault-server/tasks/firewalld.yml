@@ -8,7 +8,7 @@
   with_items:
     - "8200/tcp"
   tags: firewalld
-  # when: ansible_fqdn is search('utrutsttcs01v')
+  when: ansible_fqdn is search('utrutstvault01v')
 
 - name: Add mappings to /etc/hosts
   blockinfile:

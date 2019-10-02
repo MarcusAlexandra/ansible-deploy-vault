@@ -1,24 +1,13 @@
 ---
-- name: copy Vault Server Configs
-  copy:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: "{{ item.mode }}"
-    owner: root
-    group: root
-  with_items:
-    - { src: '.vault_pass', dest: '/tmp/.vault_pass', owner: 'root', group: 'root', mode: '0755' }
-
+#
+#  openssl passwd -1 ansible-vault-svc
+#
 - name: Add group {{ user }}
   group:
     name: "{{ vault_user }}"
     gid: "{{ vault_user_id }}"
     state: present
 
-# - name: Import
-#   shell: /tmp/.vault_pass
-#   environment:
-#     newUserPass: "{{ ansibleVault.json.data.value }}"
 
 - name: Add user {{ user }}
   user:
