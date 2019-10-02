@@ -1,0 +1,39 @@
+---
+- name: Enable Auth Methods [userpass approle]
+  shell: |
+    vault auth enable "{{ item }}"
+  ignore_errors: true
+  args:
+    warn: true
+  environment:
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+  with_items:
+    - userpass
+    - approle
+    - ldap
+    - github
+  register: vaultEnableUserpassAuth
+
+- name: copy Vault Auth Method Capabilities
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    owner: root
+    group: root
+  with_items:
+    - { src: 'userpass-policy.hcl', dest: '/apps/data/manifest/userpass-policy.hcl', owner: 'root', group: 'root', mode: '0640' }
+
+- name: Write Auth Method Capabilities [ userpass ]
+  shell: |
+    vault policy write userpass-policy "{{ item }}"
+  ignore_errors: true
+  args:
+    warn: true
+  environment:
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+  with_items:
+    - /apps/data/manifest/userpass-policy.hcl
+  register: vaultEnableUserpassAuth
+
+...

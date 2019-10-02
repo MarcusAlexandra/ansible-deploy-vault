@@ -140,12 +140,6 @@ Using the Vault CLI, login to the Vault using the "Initial Root Token"
 
 Once logged in - you're able to interact with the Vault
 
-  [root@utrutstvault01v ~]# vault auth enable approle
-  Success! Enabled approle auth method at: approle/
-  [root@utrutstvault01v ~]#
-
-# yum install jq
-
   [root@utrutstvault01v ~]# cat /etc/vault/initfile | jq .
   {
     "unseal_shares": 5,

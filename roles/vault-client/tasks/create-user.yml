@@ -1,13 +1,22 @@
 ---
-- name: copy Vault Server Configs
-  copy:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: "{{ item.mode }}"
-    owner: root
-    group: root
-  with_items:
-    - { src: '.vault_pass', dest: '/tmp/.vault_pass', owner: 'root', group: 'root', mode: '0755' }
+#
+# ansible-vault encrypt_string `openssl passwd -1 HRC-Marcus-Garvey`
+#
+
+- name: Get User Vault Password
+  uri:
+    url: "{{ vaultUrl }}"
+    method: GET
+    headers:
+      Content-Type: "application/json"
+      X-Vault-Token: 's.a94wPBs0lV5wI1CDp8o2a4SU'
+      #X-Vault-Token: '{{unSealToken.stdout}}'
+    status_code: 200
+    force_basic_auth: yes
+  register: ansibleVault
+
+- debug:
+    msg: "{{ ansibleVault.json.data.value }}"
 
 - name: Add group {{ user }}
   group:
@@ -15,10 +24,6 @@
     gid: "{{ vault_user_id }}"
     state: present
 
-# - name: Import
-#   shell: /tmp/.vault_pass
-#   environment:
-#     newUserPass: "{{ ansibleVault.json.data.value }}"
 
 - name: Add user {{ user }}
   user:

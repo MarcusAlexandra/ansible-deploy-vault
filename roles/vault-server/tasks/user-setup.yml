@@ -11,9 +11,11 @@
     uid: "{{ vault_user_id }}"
     group: "{{ vault_group }}"
     password: "{{ vault_passwd }}"
-    home: "/apps/{{ vault_user }}"
+    comment: "Vault nologin User"
+    home: "/{{ vault_home }}"
     shell: /bin/bash
     skeleton: /etc/skel
+    state: present
     create_home: yes
   tags: [ 'vault_user', 'vault_installdir' ]
 

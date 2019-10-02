@@ -1,13 +1,5 @@
 ---
-# 1. Add Users
-#    Ex. Add a user for retrieving ansible values
-# 2. Add Policy/Capabilities to Users
-#    Ex.
-#        i.  Allow user to retireve kv's from vault via defined policies
-#        ii. Allow user to retrieve versioned kv's from vault based on asserted environments
-#            (Ex. tst|dev|qa|prod)
-
-- name: Is Vault Unsealed
+- name: Check if Vault is Sealed
   shell: |
      vault status -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.sealed'
   register: vaultSealed
@@ -49,16 +41,4 @@
     VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
   when: vaultSealed.stdout == 'false'
 
-- name: Enable Auth Methods [userpass approle]
-  shell: |
-    vault auth enable "{{ item }}"
-  ignore_errors: true
-  args:
-    warn: true
-  environment:
-    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
-  with_items:
-    - userpass
-    - approle
-  register: vaultEnableUserpassAuth
 ...

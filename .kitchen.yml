@@ -13,8 +13,6 @@ provisioner:
   ansible_verbosity: 3
   ansible_check: false
   ansible_diff: true
-  # extra_vars: "2019.1.1"
-  # ansible_inventory: inventory/swarm
 
 transport:
   max_ssh_sessions: 6
@@ -36,7 +34,7 @@ suites:
 
   - name: vault-server
     driver:
-      vm_hostname: utrutstvault01v.ssi.com
+      vm_hostname: usctvltstvlt01v.curbstoneops.com
       customize:
         cpus: 1
         memory: 1048
@@ -48,11 +46,11 @@ suites:
       hosts: ansible-centos-7.6.1810-x86_64
       require_ansible_repo: true
       playbook: vault-server.yml
-      ansible_vault_password_file: [".tC_vault_pass",".kitchenCI",".vault_pass"]
+      ansible_vault_password_file: [".kitchenCIvault"]
 
   - name: vault-client
     driver:
-      vm_hostname: utrutstvault02v.ssi.com
+      vm_hostname: usctvltstvlt02v.curbstoneops.com
       customize:
         cpus: 1
         memory: 1048
@@ -63,5 +61,5 @@ suites:
       hosts: ansible-centos-7.6.1810-x86_64
       require_ansible_repo: true
       playbook: vault-user.yml
-      ansible_vault_password_file: [".tC_vault_pass",".kitchenCI",".vault_pass"]
+      ansible_vault_password_file: [".kitchenCIvault"]
 ...

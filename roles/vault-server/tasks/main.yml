@@ -1,4 +1,19 @@
 ---
+- name: set_fact for localhost
+  tags: always
+  set_fact:
+    env: "{{ ansible_hostname.split('usctvl')[1] }}"
+    env0: "{{ ansible_hostname.split('tst')[1] }}"
+    local_env: "{{ ansible_hostname.split('utru(tst|dev|qa|prd)') }}"
+  when: ansible_hostname is search('usctvl(tst|dev|qa|prd)')
+
+- debug:
+    msg: "Vault Server : {{ env }} {{env0}} HostName is {{ local_env }}"
+
+- assert:
+    that:
+      - env is search('tst|dev|qa|prd')
+
 - debug:
     msg: "{{ role_path|basename }}"
 
@@ -15,6 +30,13 @@
   tags: ['vaultService']
 
 - import_tasks: vault-server.yml
+  tags: ['vaultInit', 'initializeVault']
 
-# - import_tasks: vault-unseal.yml
-#   tags: ['unsealVault', 'unseal']
+- import_tasks: vault-unseal.yml
+  tags: ['unsealVault', 'unseal']
+
+- import_tasks: vault-auditlog.yml
+  tags: ['configureVault']
+
+- import_tasks: auth-methods.yml
+  tags: ['enableAuth', 'authMethods']
