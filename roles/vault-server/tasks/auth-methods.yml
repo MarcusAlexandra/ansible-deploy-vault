@@ -1,4 +1,16 @@
 ---
+- name: Enable [v1 KV] Secrets
+  shell: |
+    vault secrets enable -version=1 -path=kv/"{{ item }}"  "{{ secretsEngine }}"
+  ignore_errors: true
+  args:
+    warn: true
+  environment:
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+  with_items:
+    - ansible
+    - teamcity
+
 - name: Enable Auth Methods [userpass approle]
   shell: |
     vault auth enable "{{ item }}"
