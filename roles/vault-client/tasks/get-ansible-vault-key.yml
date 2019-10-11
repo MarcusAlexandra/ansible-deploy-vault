@@ -1,0 +1,41 @@
+---
+#-------------------------------------------------------------------------------
+#
+# Login into the vault and retrieves the ansible userpass token
+#   userpass policy is attached to the ansible userpass entity. The userpass-policy
+#   confers the below Capabilities - allowing ansible to interact with KV secretsEngine
+#    - Create
+#    - Update
+#    - Read
+#    - Delete
+#    - List
+#-------------------------------------------------------------------------------
+- name: Get User Token Password
+  uri:
+    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/auth/userpass/login/ansible"
+    method: POST
+    body: {"password": "ansible-svc"}
+    body_format: json
+    status_code: 200
+    force_basic_auth: yes
+    return_content: yes
+  register: ansibleAuthToken
+
+- debug:
+    msg: "{{ ansibleAuthToken.json.auth.client_token }}"
+
+- name: Get User Vault Password
+  uri:
+    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/kv/ansible/tC-userpass"
+    method: GET
+    headers:
+      Content-Type: "application/json"
+      X-Vault-Token: '{{ ansibleAuthToken.json.auth.client_token }}'
+    status_code: 200
+    force_basic_auth: yes
+  register: ansibleAuthPasswd
+
+- debug:
+    msg: "{{ ansibleAuthPasswd.json.data.value }}"
+
+...

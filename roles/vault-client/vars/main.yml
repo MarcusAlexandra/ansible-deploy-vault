@@ -1,6 +1,6 @@
 ---
-vault_user: "vault"
-vault_group: "vault"
-vault_home: "/apps/{{vault_user}}"
-vault_data: "{{ vault_home }}/data"
-vault_user_id: "1203"
+# vault_user: "vault"
+# vault_group: "vault"
+# vault_home: "/apps/{{vault_user}}"
+# vault_data: "{{ vault_home }}/data"
+# vault_user_id: "1203"

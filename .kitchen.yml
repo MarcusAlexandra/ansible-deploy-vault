@@ -4,7 +4,7 @@ driver:
 
 provisioner:
   name: ansible_playbook
-  ansible_version: 2.7.5
+  ansible_version: 2.8.5
   ansible_yum_repo: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
   hosts: all
   require_chef_for_busser: true
@@ -34,7 +34,7 @@ suites:
 
   - name: vault-server
     driver:
-      vm_hostname: usctvltstvlt01v.curbstoneops.com
+      vm_hostname: utrutstvault01v.ssi.com
       customize:
         cpus: 1
         memory: 1048
@@ -60,6 +60,6 @@ suites:
     provisioner:
       hosts: ansible-centos-7.6.1810-x86_64
       require_ansible_repo: true
-      playbook: vault-user.yml
+      playbook: vault-client.yml
       ansible_vault_password_file: [".kitchenCIvault"]
 ...

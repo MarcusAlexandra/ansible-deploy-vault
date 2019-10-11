@@ -2,10 +2,10 @@
 - name: set_fact for localhost
   tags: always
   set_fact:
-    env: "{{ ansible_hostname.split('usctvl')[1] }}"
+    env: "{{ ansible_hostname.split('utru')[1] }}"
     env0: "{{ ansible_hostname.split('tst')[1] }}"
     local_env: "{{ ansible_hostname.split('utru(tst|dev|qa|prd)') }}"
-  when: ansible_hostname is search('usctvl(tst|dev|qa|prd)')
+  when: ansible_hostname is search('utru(tst|dev|qa|prd)')
 
 - debug:
     msg: "Vault Server : {{ env }} {{env0}} HostName is {{ local_env }}"

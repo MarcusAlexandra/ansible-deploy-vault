@@ -1,0 +1,38 @@
+---
+
+# ansible-playbook -i localhost, -c local -D ./tt.yml -e "login=ansible"
+
+# vault secrets enable -path=kv/ansible -description="Engine Store for Ansible Key Value Pairs" kv
+# vault write kv/ansible/tC-userpass value='$1$mXS2EtES$i7RHSSVZv7LUJwTMat.TJ1'
+# vault write auth/userpass/users/ansible policies=default,userpass password=ansible-svc
+# curl -s --request POST --data '{"password": "ansible-svc"}'  http://10.13.3.10:8200/v1/auth/userpass/login/ansible | jq -r '.auth.client_token'
+
+  - hosts: all
+    gather_facts: true
+    become: true
+    become_user: root
+    become_method: sudo
+    tags: always
+
+    vars:
+      vaultUrl: http://10.13.3.10
+      vaultUrlPort: 8200
+      userPassuser: "{{ login }}"
+
+    tasks:
+      - debug:
+          msg: "Login is {{ userPassuser }}"
+
+      - name: Get User Token Password
+        uri:
+          url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/auth/userpass/login/{{ userPassuser }}"
+          method: POST
+          body: {"password": "ansible-svc"}
+          body_format: json
+          status_code: 200
+          force_basic_auth: yes
+          return_content: yes
+        register: ansibleAuthToken
+
+      - debug:
+          msg: "{{ ansibleAuthToken.json.auth.client_token }}"

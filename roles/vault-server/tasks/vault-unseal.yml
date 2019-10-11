@@ -16,7 +16,8 @@
   register: vaultSealStatus
 
 - name: Check if Vault is Initialized
-  shell: vault status -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.initialized'
+  shell: |
+    vault status -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.initialized'
   ignore_errors: true
   args:
     warn: true

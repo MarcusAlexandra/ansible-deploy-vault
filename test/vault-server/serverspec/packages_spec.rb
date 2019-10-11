@@ -15,6 +15,7 @@ end
   wget
   unzip
   bzip2
+  jq
   ).each do |pkg|
    describe package "#{pkg}", :if => os[:arch] == 'x86_64' do
      it { should be_installed }

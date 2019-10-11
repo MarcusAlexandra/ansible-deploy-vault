@@ -34,9 +34,10 @@
     owner: root
     group: root
   with_items:
-    - { src: 'userpass-policy.hcl', dest: '/apps/data/manifest/userpass-policy.hcl', owner: 'root', group: 'root', mode: '0640' }
+    - { src: 'userpass-policy.hcl', dest: '/apps/data/manifest/userpass-policy.hcl', owner: 'root', group: 'root', mode: '0600' }
+    - { src: 'admin-policy.hcl', dest: '/apps/data/manifest/admin-policy.hcl', owner: 'root', group: 'root', mode: '0600' }
 
-- name: Write Auth Method Capabilities [ userpass ]
+- name: Write Auth Method Capabilities [ userpass policies ]
   shell: |
     vault policy write userpass-policy "{{ item }}"
   ignore_errors: true
@@ -47,5 +48,86 @@
   with_items:
     - /apps/data/manifest/userpass-policy.hcl
   register: vaultEnableUserpassAuth
+
+- name: Write Auth Method Capabilities [ vault_admin policies ]
+  shell: |
+    vault policy write admin-policy "{{ item }}"
+  ignore_errors: true
+  args:
+    warn: true
+  environment:
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+  with_items:
+      - /apps/data/manifest/admin-policy.hcl
+  register: vaultEnableUserpassAuth
+#---------------------------------------------------------------
+
+     # curl -s -H "X-Vault-Token: s.TYtaD2Eu3lbIQMcYJ9eFwfEn" --request POST \
+     #   --data '{"password": "teamcity-svc", "policies": "default,userpass-policy"}'
+     #   http://10.13.3.10:8200/v1/auth/userpass/users/teamcity
+
+- debug:
+    msg: "Root Token ==> {{ rootToken.stdout }}"
+
+- name: Create Vault Admin User
+  uri:
+    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/auth/userpass/users/admin"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+      X-Vault-Token: '{{ rootToken.stdout }}'
+    body: {"password": "vaultadmin-svc", "policies": [ "admin-policy", "userpass-policy" ], "token_policies": [ "admin-policy", "userpass-policy" ]}
+    body_format: json
+    status_code: 204
+    force_basic_auth: yes
+    return_content: yes
+  register: createVaultAdmin
+
+- name: Get VaultAdmin User Token Password
+  uri:
+    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/auth/userpass/login/admin"
+    method: POST
+    body: {"password": "vaultadmin-svc"}
+    body_format: json
+    status_code: 200
+    force_basic_auth: yes
+    return_content: yes
+  register: vaultAdminAuthToken
+
+- debug:
+    msg: "Vault Admin {{ vaultAdminAuthToken.json.auth.client_token }}"
+
+- name: Create Ansible Admin User
+  uri:
+    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/auth/userpass/users/ansible"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+      X-Vault-Token: '{{ rootToken.stdout }}'
+    body: {"password": "ansible-svc", "policies": [ "admin-policy", "userpass-policy" ], "token_policies": [ "admin-policy", "userpass-policy" ]}
+    body_format: json
+    status_code: 204
+    force_basic_auth: yes
+    return_content: yes
+  register: ansibleAuth
+
+- debug:
+    msg: "ansible client token {{ ansibleAuth }}"
+
+
+- name: Get Ansible User Token Password
+  uri:
+    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/auth/userpass/login/ansible"
+    method: POST
+    body: {"password": "ansible-svc"}
+    body_format: json
+    status_code: 200
+    force_basic_auth: yes
+    return_content: yes
+  register: ansibleAuthToken
+
+
+- debug:
+    msg: "Ansible User Token {{ ansibleAuthToken }}"
 
 ...

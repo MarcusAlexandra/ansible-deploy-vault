@@ -1,0 +1,123 @@
+---
+- hosts: all
+  gather_facts: true
+  become: true
+  become_user: root
+  become_method: sudo
+  tags: always
+
+  vars:
+    vaultUrl: http://10.13.3.10:8200
+    vaultSecretVer: v1
+    vaultSecretPath: kv 
+    vaultSecret: ansible-tC-pass
+    vaultUrlPort: 8200
+
+  tasks:
+    - name: Check if Vault is Sealed
+      shell: vault status -format json | jq -r '.sealed'
+      ignore_errors: true
+      args:
+        warn: true
+      register: vaultSealStatus
+
+    - debug:
+        msg: "{{ vaultSealStatus.stdout }}"
+
+    #- name: Retrieve Vault Token
+    #  debug:
+    #    var: "{{ item }}"
+    #  with_file:
+    #    - "/etc/vault/initfile"
+    #  register: rootToken
+    #
+    #- debug:
+    #    msg: "Vault Root Token {{ rootToken.stdout }} | jq -r '.root_token'"
+
+    - name: Get Root Token
+      #shell: cat /etc/vault/initfile | jq -r '.root_token'
+      shell: vault token lookup  -format json | jq -r '.data.id'
+      ignore_errors: true
+      args:
+        warn: false
+      register: unSealToken
+      when: vaultSealStatus.stdout == 'false'
+
+    - debug:
+        msg: "Unseal Token {{unSealToken.stdout}}"
+
+    #
+    # vault enable userpass
+    #
+    - name: Enable Userpass Auth Method
+      shell: 
+        vault enable userpass
+      ignore_errors: true
+      args:
+        warn: true
+      register: vaultEnableUserpassAuth
+
+    - debug:
+        msg: "Enable UserPass Auth Method {{ vaultEnableUserpassAuth.stdout }}"
+
+    - name: Create Userpass Auth Method Account
+      uri:
+        url: "{{ vaultUrl }}/v1/auth/userpass/login/ansible"
+        method: PUT
+        body: '{"password=ansible-vault-svc"}'
+        body_format: json
+        headers:
+          Content-Type: "application/json"
+          X-Vault-Token: '{{unSealToken.stdout}}'
+        status_code: 204 
+        return_content: yes
+        force_basic_auth: yes
+      when: vaultSealStatus.stdout == 'false'
+
+          
+    - name: Write kv/Secret to Vault
+      uri:
+        url: "{{ vaultUrl }}/{{vaultSecretVer }}/{{vaultSecretPath }}/postgreSQLdb-pass"
+        method: PUT
+        body: '{ "value": "HarperGarvey"}'
+        body_format: json 
+        headers:
+          Content-Type: "application/json"
+          X-Vault-Token: '{{unSealToken.stdout}}'
+        status_code: 204
+        return_content: yes
+        force_basic_auth: yes
+      register: ansibleVault
+      when: vaultSealStatus.stdout == 'false'
+
+    - name: Get User Vault Password
+      uri:
+        url: "{{ vaultUrl }}/{{vaultSecretVer }}/{{vaultSecretPath }}/{{ vaultSecret }}"
+        #url: "{{ vaultUrl }}/{{vaultSecretVer }}/{{vaultSecretPath }}/{{ item }}"
+        method: GET
+        headers:
+          Content-Type: "application/json"
+          X-Vault-Token: '{{unSealToken.stdout}}'
+        status_code: 200
+        force_basic_auth: yes
+      register: ansibleVault
+      #with_items:
+      #  - postgreSQLdb-pass
+      #  - ansible-tC-pass
+      when: vaultSealStatus.stdout == 'false'
+
+    - debug:
+        msg: "{{ ansibleVault.json.data.value }}"
+
+    #- debug:
+    #    msg: "{{ item.ansibleVault.json.data.value }}"
+    #  with_items: "{{ ansibleVault.results }}"
+
+    #- name: Write Vault Values to file
+    #  lineinfile:
+    #    create: yes
+    #    dest: /tmp/.vaultUserpass
+    #    state: present
+    #    line: "{{ ansibleVault.json.data.value }}"
+
+...
