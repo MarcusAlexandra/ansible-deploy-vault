@@ -1,28 +1,4 @@
 ---
-#
-<<<<<<< HEAD
-# ansible-vault encrypt_string `openssl passwd -1 HRC-Marcus-Garvey`
-#
-
-- name: Get User Vault Password
-  uri:
-    url: "{{ vaultUrl }}"
-    method: GET
-    headers:
-      Content-Type: "application/json"
-      X-Vault-Token: 's.a94wPBs0lV5wI1CDp8o2a4SU'
-      #X-Vault-Token: '{{unSealToken.stdout}}'
-    status_code: 200
-    force_basic_auth: yes
-  register: ansibleVault
-
-- debug:
-    msg: "{{ ansibleVault.json.data.value }}"
-
-=======
-#  openssl passwd -1 ansible-vault-svc
-#
->>>>>>> 808d817daceb24a275ec2a4a9955b899897a392c
 - name: Add group {{ user }}
   group:
     name: "{{ vault_user }}"
@@ -34,7 +10,7 @@
   user:
     name: "{{ vault_user }}"
     uid: "{{ vault_user_id }}"
-    group: "{{ vault_group }}"
+    group: "{{ vault_user }}"
     password: "{{ ansibleVault.json.data.value }}"
     home: "/apps/{{ vault_user }}"
     shell: /bin/bash

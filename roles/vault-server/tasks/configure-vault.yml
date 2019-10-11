@@ -16,7 +16,8 @@
     msg: "Task: Is Vault Unsealed: {{ vaultSealed.stdout }}"
 
 - name: Get vaultUnseal RootToken
-  shell: vault token lookup -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.data.id'
+  shell: |
+     vault token lookup -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.data.id'
   ignore_errors: true
   args:
     warn: false
@@ -25,7 +26,6 @@
   when: vaultSealed.stdout == 'false'
   register: rootToken
 
-- name: Enable Vault Logging
   become: yes
   become_user: root
   shell: |
@@ -61,4 +61,5 @@
     - userpass
     - approle
   register: vaultEnableUserpassAuth
+
 ...

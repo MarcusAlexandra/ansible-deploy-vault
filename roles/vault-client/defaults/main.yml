@@ -1,3 +1,6 @@
 ---
-vaultUrl: http://10.13.3.10:8200/v1/kv/ansible-tC-pass
+vaultUrl: http://10.13.3.10
 vaultUrlPort: 8200
+
+vault_user: vault_admin
+vault_user_id: 1200

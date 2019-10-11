@@ -1,0 +1,106 @@
+---
+- hosts: all
+  gather_facts: true
+  become: true
+  become_user: root
+  become_method: sudo
+  tags: always
+
+  vars:
+    vaultUrl: http://10.13.3.10
+    vaultUrlPort: 8200
+    vaultSecretVer: v1
+    vaultSecretPath: kv
+    vaultSecret: ansible-tC-pass
+
+  tasks:
+
+    #- name: Is Vault Unsealed
+    #  shell: vault status -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.sealed'
+    #  register: vaultSealed
+
+    #- debug:
+    #    msg: "Task: Is Vault Unsealed: {{ vaultSealed.stdout }}"
+
+    #- name: Get vaultUnseal RootToken
+    #  shell: vault token lookup -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.data.id'
+    #  ignore_errors: true
+    #  args:
+    #    warn: false
+    #  when: vaultSealed.stdout == 'false'
+    #  register: rootToken
+
+    #- debug:
+    #    msg: "Task: Get vaultUnseal rootToken: {{ rootToken.stdout }}"
+
+    # vault audit enable file -address="{{ vaultUrl }}:{{ vaultUrlPort }}" file_path=/var/log/vault/audit.log
+
+    - name: Determine Vault Service State
+      service_facts:
+
+    - debug:
+        var: ansible_facts.services['vault.service'].state
+
+    - name: Check if Vault is Sealed
+      shell: vault status -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.sealed'
+      ignore_errors: true
+      args:
+        warn: true
+      environment:
+        VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+      when: ansible_facts.services['vault.service'].state == 'running'
+      register: vaultSealStatus
+
+    - name: Check if Vault is Initialized
+      shell: vault status -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.initialized'
+      ignore_errors: true
+      args:
+        warn: true
+      environment:
+        VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+      when: ansible_facts.services['vault.service'].state == 'running'
+      register: vaultInitStatus
+
+    - name: Check if Vault InitFile exists
+      stat:
+        path: "/etc/vault/initfile"
+      register: vaultInitFile
+
+    - name: Read values from [/etc/vault/initfile]
+      debug:
+        msg="{{lookup('file', '/etc/vault/initfile') }}"
+      no_log: true
+      register: unsealKeys
+      when: ( vaultSealStatus.stdout == 'true' and vaultInitFile.stat.exists )
+
+    - debug:
+        msg: "{{ unsealKeys.msg.unseal_keys_hex }}"
+
+    - name: Define Vault Unseal [Keys/Login Token]
+      set_fact:
+        unsealHexKeys: "{{ unsealKeys.msg.unseal_keys_hex }}"
+        unsealRootKey: "{{  unsealKeys.msg.root_token }}"
+      when: ( vaultSealStatus.stdout == 'true' and unsealKeys is defined )
+
+    - name: Unseal Vault
+      shell: |
+        vault operator unseal "{{ item }}"
+      no_log: true
+      environment:
+        VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+      with_items:
+        - "{{ unsealHexKeys }}"
+      when: vaultSealStatus.stdout == 'true'
+
+    - name: Vault login
+      shell: |
+        vault login "{{ unsealRootKey }}"
+      environment:
+        VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+      ignore_errors: true
+      args:
+        warn: true
+      register: vaultLogin
+      when: vaultSealStatus.stdout == 'true'
+
+...
