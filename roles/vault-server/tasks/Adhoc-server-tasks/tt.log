@@ -1,0 +1,476 @@
+    "token_type": "service",
+    "orphan": true
+  }
+}
+[root@utrutstvault01v vault]# vault token lookup 
+Key                 Value
+---                 -----
+accessor            U9DN0lDpyQKHusj2BxV4VrBM
+creation_time       1570730657
+creation_ttl        0s
+display_name        root
+entity_id           n/a
+expire_time         <nil>
+explicit_max_ttl    0s
+id                  s.pZxu0W1fY4YD46NinELkxXc4
+meta                <nil>
+num_uses            0
+orphan              true
+path                auth/token/root
+policies            [root]
+ttl                 0s
+type                service
+[root@utrutstvault01v vault]# 
+[root@utrutstvault01v vault]# 
+[root@utrutstvault01v vault]# 
+[root@utrutstvault01v vault]# 
+[root@utrutstvault01v vault]# 
+[root@utrutstvault01v vault]# 
+[root@utrutstvault01v vault]# clear
+
+[root@utrutstvault01v vault]# ls -la
+total 796
+drwxr-xr-x.  2 root root   4096 Oct 10 14:04 .
+drwxr-xr-x. 12 root root   4096 Oct 10 14:04 ..
+-rw-------.  1 root root 804066 Oct 10 14:26 audit.log
+[root@utrutstvault01v vault]# cd 
+[root@utrutstvault01v ~]# cd /apps/vault/
+[root@utrutstvault01v vault]# ls -l
+total 0
+[root@utrutstvault01v vault]# ls -lta
+total 20
+drwxr-xr-x. 5 root  root  4096 Oct 10 14:04 ..
+drwx------. 2 vault vault 4096 Oct 10 14:04 .
+-rw-r--r--. 1 vault vault   18 Oct 30  2018 .bash_logout
+-rw-r--r--. 1 vault vault  193 Oct 30  2018 .bash_profile
+-rw-r--r--. 1 vault vault  231 Oct 30  2018 .bashrc
+[root@utrutstvault01v vault]# cd ../
+[root@utrutstvault01v apps]# ls -la
+total 32
+drwxr-xr-x.  5 root  root   4096 Oct 10 14:04 .
+dr-xr-xr-x. 21 root  root   4096 Oct 10 14:03 ..
+drwxr-xr-x.  4 root  root   4096 Oct 10 14:04 data
+drwx------.  2 root  root  16384 Jul 12 10:57 lost+found
+drwx------.  2 vault vault  4096 Oct 10 14:04 vault
+[root@utrutstvault01v apps]# cd data/
+[root@utrutstvault01v data]# ls -l
+total 8
+drwxr-xr-x. 2 root root 4096 Oct 10 14:04 manifest
+drwxr-xr-x. 7 root root 4096 Oct 10 14:04 vault
+[root@utrutstvault01v data]# cd manifest/
+[root@utrutstvault01v manifest]# ls -l
+total 8
+-rw-------. 1 root root 1122 Oct 10 14:04 admin-policy.hcl
+-rw-------. 1 root root  132 Oct 10 14:04 userpass-policy.hcl
+[root@utrutstvault01v manifest]# cd ../
+[root@utrutstvault01v data]# ls -lta
+total 16
+drwxr-xr-x. 7 root root 4096 Oct 10 14:04 vault
+drwxr-xr-x. 2 root root 4096 Oct 10 14:04 manifest
+drwxr-xr-x. 4 root root 4096 Oct 10 14:04 .
+drwxr-xr-x. 5 root root 4096 Oct 10 14:04 ..
+[root@utrutstvault01v data]# cd manifest/
+[root@utrutstvault01v manifest]# ls -l
+total 8
+-rw-------. 1 root root 1122 Oct 10 14:04 admin-policy.hcl
+-rw-------. 1 root root  132 Oct 10 14:04 userpass-policy.hcl
+[root@utrutstvault01v manifest]# cd ../
+[root@utrutstvault01v data]# ls -l
+total 8
+drwxr-xr-x. 2 root root 4096 Oct 10 14:04 manifest
+drwxr-xr-x. 7 root root 4096 Oct 10 14:04 vault
+[root@utrutstvault01v data]# cd vault/
+[root@utrutstvault01v vault]# ls -l
+total 20
+drwx------. 4 root root 4096 Oct 10 14:04 audit
+drwx------. 3 root root 4096 Oct 10 14:04 auth
+drwx------. 4 root root 4096 Oct 10 14:04 core
+drwx------. 3 root root 4096 Oct 10 14:04 logical
+drwx------. 6 root root 4096 Oct 10 14:04 sys
+[root@utrutstvault01v vault]# cd ^C
+[root@utrutstvault01v vault]# pwd
+/apps/data/vault
+[root@utrutstvault01v vault]# cd ../
+[root@utrutstvault01v data]# ls -l
+total 8
+drwxr-xr-x. 2 root root 4096 Oct 10 14:04 manifest
+drwxr-xr-x. 7 root root 4096 Oct 10 14:04 vault
+[root@utrutstvault01v data]# cd ../
+[root@utrutstvault01v apps]# ls -l
+total 24
+drwxr-xr-x. 4 root  root   4096 Oct 10 14:04 data
+drwx------. 2 root  root  16384 Jul 12 10:57 lost+found
+drwx------. 2 vault vault  4096 Oct 10 14:04 vault
+[root@utrutstvault01v apps]# ls -la
+total 32
+drwxr-xr-x.  5 root  root   4096 Oct 10 14:04 .
+dr-xr-xr-x. 21 root  root   4096 Oct 10 14:03 ..
+drwxr-xr-x.  4 root  root   4096 Oct 10 14:04 data
+drwx------.  2 root  root  16384 Jul 12 10:57 lost+found
+drwx------.  2 vault vault  4096 Oct 10 14:04 vault
+[root@utrutstvault01v apps]# cd vault/
+[root@utrutstvault01v vault]# ls -lta
+total 20
+drwxr-xr-x. 5 root  root  4096 Oct 10 14:04 ..
+drwx------. 2 vault vault 4096 Oct 10 14:04 .
+-rw-r--r--. 1 vault vault   18 Oct 30  2018 .bash_logout
+-rw-r--r--. 1 vault vault  193 Oct 30  2018 .bash_profile
+-rw-r--r--. 1 vault vault  231 Oct 30  2018 .bashrc
+[root@utrutstvault01v vault]# mkdir bin
+[root@utrutstvault01v vault]# cd bin/
+[root@utrutstvault01v bin]# ls -l
+total 0
+[root@utrutstvault01v bin]# chown -R vault:vbault ../bin/
+chown: invalid group: ‘vault:vbault’
+[root@utrutstvault01v bin]# chown -R vault:vault ../bin/
+[root@utrutstvault01v bin]# vi training-policy.sh
+[root@utrutstvault01v bin]# chmod 755 training-policy.sh 
+[root@utrutstvault01v bin]# vi training-policy.sh 
+[root@utrutstvault01v bin]# vi base.hcl
+[root@utrutstvault01v bin]# vi test.hcl
+[root@utrutstvault01v bin]# vi team-qa.hcl
+[root@utrutstvault01v bin]# vaul secrets list --detailed
+-bash: vaul: command not found
+[root@utrutstvault01v bin]# vault secrets list --detailed
+Path            Plugin       Accessor              Default TTL    Max TTL    Force No Cache    Replication    Seal Wrap    Options           Description                                                UUID
+----            ------       --------              -----------    -------    --------------    -----------    ---------    -------           -----------                                                ----
+cubbyhole/      cubbyhole    cubbyhole_eae88b07    n/a            n/a        false             local          false        map[]             per-token private secret storage                           2f409aca-46d2-1837-f14e-b14482285c65
+identity/       identity     identity_80360ffe     system         system     false             replicated     false        map[]             identity store                                             075b9e7b-1262-0647-6b0c-39fc9d1f691b
+kv/ansible/     kv           kv_102ba77b           system         system     false             replicated     false        map[version:1]    n/a                                                        0d20b2cc-1220-4fdc-507f-69b2cf7ea4ff
+kv/teamcity/    kv           kv_863c89ca           system         system     false             replicated     false        map[version:1]    n/a                                                        8a2dfb11-a12f-eddb-ebc0-840007d8c2ad
+sys/            system       system_a0c30dd5       n/a            n/a        false             replicated     false        map[]             system endpoints used for control, policy and debugging    e52b5529-b89a-fa95-ef20-424ce161eda1
+[root@utrutstvault01v bin]# ls -tla
+total 24
+drwxr-xr-x. 2 vault vault 4096 Oct 10 14:37 .
+-rw-r--r--. 1 root  root   276 Oct 10 14:37 team-qa.hcl
+-rw-r--r--. 1 root  root   270 Oct 10 14:37 test.hcl
+-rw-r--r--. 1 root  root   238 Oct 10 14:36 base.hcl
+-rwxr-xr-x. 1 root  root  1121 Oct 10 14:31 training-policy.sh
+drwx------. 3 vault vault 4096 Oct 10 14:31 ..
+[root@utrutstvault01v bin]# vault policy write base base.hcl
+Success! Uploaded policy: base
+[root@utrutstvault01v bin]# curl -s --header "X-Vault-Token: s.pZxu0W1fY4YD46NinELkxXc4" --data @test.hcl http://10.13.3.10:8200/v1/sys/policies/acl/test
+{"errors":["failed to parse JSON input: invalid character '#' looking for beginning of value"]}
+[root@utrutstvault01v bin]# vi test.hcl 
+[root@utrutstvault01v bin]# curl -s --header "X-Vault-Token: s.pZxu0W1fY4YD46NinELkxXc4" --data @test.hcl http://10.13.3.10:8200/v1/sys/policies/acl/test
+{"errors":["failed to parse JSON input: invalid character 'p' looking for beginning of value"]}
+[root@utrutstvault01v bin]# vi test.hcl 
+[root@utrutstvault01v bin]# vi test.hcl 
+[root@utrutstvault01v bin]# vi test-hcl.json
+[root@utrutstvault01v bin]# curl -s --header "X-Vault-Token: s.pZxu0W1fY4YD46NinELkxXc4" --data @test.hcl http://10.13.3.10:8200/v1/sys/policies/acl/test
+{"errors":["failed to parse JSON input: invalid character '#' looking for beginning of value"]}
+[root@utrutstvault01v bin]# curl -s --header "X-Vault-Token: s.pZxu0W1fY4YD46NinELkxXc4" --data @test-hcl.json  http://10.13.3.10:8200/v1/sys/policies/acl/test
+{"errors":["failed to parse JSON input: invalid character 'p' after object key:value pair"]}
+[root@utrutstvault01v bin]# vi test-hcl.json
+[root@utrutstvault01v bin]# curl -s --header "X-Vault-Token: s.pZxu0W1fY4YD46NinELkxXc4" --data @test-hcl.json  http://10.13.3.10:8200/v1/sys/policies/acl/test
+{"errors":["failed to parse JSON input: invalid character '{' after object key:value pair"]}
+[root@utrutstvault01v bin]# vi test-hcl.json
+[root@utrutstvault01v bin]# curl -s --header "X-Vault-Token: s.pZxu0W1fY4YD46NinELkxXc4" --data @test-hcl.json  http://10.13.3.10:8200/v1/sys/policies/acl/test
+[root@utrutstvault01v bin]# curl -s --header "X-Vault-Token: s.pZxu0W1fY4YD46NinELkxXc4" --request POST --data '{"type": "userpass", "password": "training", "policies": ["test", "default"]}' http://10.13.3.10:8200/v1/auth/userpass/users/bob
+[root@utrutstvault01v bin]# curl -s --header "X-Vault-Token: s.pZxu0W1fY4YD46NinELkxXc4" --request POST --data '{"type": "userpass", "password": "training", "policies": ["team-qa"]}' http://10.13.3.10:8200/v1/auth/userpass/users/bsmith
+[root@utrutstvault01v bin]# vault write auth/userpass/users/bsmith password="training" policies="team-qa"
+Success! Data written to: auth/userpass/users/bsmith
+[root@utrutstvault01v bin]# ls -lta
+total 28
+drwxr-xr-x. 2 vault vault 4096 Oct 10 15:27 .
+-rw-r--r--. 1 root  root   235 Oct 10 15:27 test-hcl.json
+-rw-r--r--. 1 root  root   270 Oct 10 14:43 test.hcl
+-rw-r--r--. 1 root  root   276 Oct 10 14:37 team-qa.hcl
+-rw-r--r--. 1 root  root   238 Oct 10 14:36 base.hcl
+-rwxr-xr-x. 1 root  root  1121 Oct 10 14:31 training-policy.sh
+drwx------. 3 vault vault 4096 Oct 10 14:31 ..
+[root@utrutstvault01v bin]# vault policy write base test.hcl
+Success! Uploaded policy: base
+[root@utrutstvault01v bin]# vault policy write test test.hcl
+Success! Uploaded policy: test
+[root@utrutstvault01v bin]# vault policy write base base.hcl
+Success! Uploaded policy: base
+[root@utrutstvault01v bin]# vault policy write team-qa team-qa.hcl
+Success! Uploaded policy: team-qa
+[root@utrutstvault01v bin]# vault policy list 
+admin-policy
+base
+default
+team-qa
+test
+userpass-policy
+root
+[root@utrutstvault01v bin]# vault write auth/userpass/users/bob password="training" policies="test"
+Success! Data written to: auth/userpass/users/bob
+[root@utrutstvault01v bin]# vault write auth/userpass/users/bsmith password="training" policies="team-qa"
+Success! Data written to: auth/userpass/users/bsmith
+[root@utrutstvault01v bin]# vault auth list -detailed
+Path         Plugin      Accessor                  Default TTL    Max TTL    Token Type         Replication    Seal Wrap    Options    Description                UUID
+----         ------      --------                  -----------    -------    ----------         -----------    ---------    -------    -----------                ----
+approle/     approle     auth_approle_0d6d4d4e     system         system     default-service    replicated     false        map[]      n/a                        eb6408f9-f9a5-7455-49c0-a52866bf1ce7
+github/      github      auth_github_c32a71ee      system         system     default-service    replicated     false        map[]      n/a                        19a6b33a-a4c6-2e9b-dc81-f52c59348594
+ldap/        ldap        auth_ldap_39f898c8        system         system     default-service    replicated     false        map[]      n/a                        9c382ae2-9be2-92cd-1170-b83b927c45b6
+token/       token       auth_token_70e9a4ae       system         system     default-service    replicated     false        map[]      token based credentials    43459b03-c903-d72b-eb03-a3941edea9af
+userpass/    userpass    auth_userpass_4bf07974    system         system     default-service    replicated     false        map[]      n/a                        a3f9d932-05de-1a9c-4ecd-2aebfc0a3ab6
+[root@utrutstvault01v bin]# vault auth list -format=jsomn | jq -r '.["userpass/"].accessor'
+Invalid output format: jsomn
+[root@utrutstvault01v bin]# vault auth list -format=json | jq -r '.["userpass/"].accessor'
+auth_userpass_4bf07974
+[root@utrutstvault01v bin]# vault auth list -format=json | jq -r '.["userpass/"].accessor' > auth_userpass_4bf07974_accessor.txt
+[root@utrutstvault01v bin]# vault write identity/entity name="bob-smith" policies="base" \
+>         metadata=organization="ACME Inc." \
+>         metadata=team="QA"
+Key        Value
+---        -----
+aliases    <nil>
+id         1f9218d4-7d5f-a9c3-03a4-b7e38b115aea
+name       bob-smith
+[root@utrutstvault01v bin]# vault write identity/entity-alias name="bob" canonical_id="1f9218d4-7d5f-a9c3-03a4-b7e38b115aea" mount_accessor=$(cat auth_userpass_4bf07974_accessor.txt)
+Key             Value
+---             -----
+canonical_id    1f9218d4-7d5f-a9c3-03a4-b7e38b115aea
+id              81fcb3e9-73c6-30c5-a855-aa2a5f0fb890
+[root@utrutstvault01v bin]# vault read identity/entity/id/81fcb3e9-73c6-30c5-a855-aa2a5f0fb890
+No value found at identity/entity/id/81fcb3e9-73c6-30c5-a855-aa2a5f0fb890
+[root@utrutstvault01v bin]# vault read identity/entity/id/1f9218d4-7d5f-a9c3-03a4-b7e38b115aea
+Key                    Value
+---                    -----
+aliases                [map[canonical_id:1f9218d4-7d5f-a9c3-03a4-b7e38b115aea creation_time:2019-10-10T19:45:54.356523812Z id:81fcb3e9-73c6-30c5-a855-aa2a5f0fb890 last_update_time:2019-10-10T19:45:54.356523812Z merged_from_canonical_ids:<nil> metadata:<nil> mount_accessor:auth_userpass_4bf07974 mount_path:auth/userpass/ mount_type:userpass name:bob]]
+creation_time          2019-10-10T19:42:54.946805776Z
+direct_group_ids       []
+disabled               false
+group_ids              []
+id                     1f9218d4-7d5f-a9c3-03a4-b7e38b115aea
+inherited_group_ids    []
+last_update_time       2019-10-10T19:45:54.356519629Z
+merged_entity_ids      <nil>
+metadata               map[organization:ACME Inc. team:QA]
+name                   bob-smith
+namespace_id           root
+policies               [base]
+[root@utrutstvault01v bin]# vault write identity/entity-alias name="bsmith" canonical_id="1f9218d4-7d5f-a9c3-03a4-b7e38b115aea" mount_accessor=$(cat auth_userpass_4bf07974_accessor.txt)
+Key             Value
+---             -----
+canonical_id    1f9218d4-7d5f-a9c3-03a4-b7e38b115aea
+id              19eab2e3-5b08-2285-7963-1be984eb22a0
+[root@utrutstvault01v bin]# vault read identity/entity/id/1f9218d4-7d5f-a9c3-03a4-b7e38b115aea
+Key                    Value
+---                    -----
+aliases                [map[canonical_id:1f9218d4-7d5f-a9c3-03a4-b7e38b115aea creation_time:2019-10-10T19:45:54.356523812Z id:81fcb3e9-73c6-30c5-a855-aa2a5f0fb890 last_update_time:2019-10-10T19:45:54.356523812Z merged_from_canonical_ids:<nil> metadata:<nil> mount_accessor:auth_userpass_4bf07974 mount_path:auth/userpass/ mount_type:userpass name:bob] map[canonical_id:1f9218d4-7d5f-a9c3-03a4-b7e38b115aea creation_time:2019-10-10T19:50:05.905712212Z id:19eab2e3-5b08-2285-7963-1be984eb22a0 last_update_time:2019-10-10T19:50:05.905712212Z merged_from_canonical_ids:<nil> metadata:<nil> mount_accessor:auth_userpass_4bf07974 mount_path:auth/userpass/ mount_type:userpass name:bsmith]]
+creation_time          2019-10-10T19:42:54.946805776Z
+direct_group_ids       []
+disabled               false
+group_ids              []
+id                     1f9218d4-7d5f-a9c3-03a4-b7e38b115aea
+inherited_group_ids    []
+last_update_time       2019-10-10T19:50:05.905707319Z
+merged_entity_ids      <nil>
+metadata               map[organization:ACME Inc. team:QA]
+name                   bob-smith
+namespace_id           root
+policies               [base]
+[root@utrutstvault01v bin]# curl -s --header "X-Vault-Token: s.pZxu0W1fY4YD46NinELkxXc4" http://10.13.3.10:8200/v1/sys/auth
+{"github/":{"accessor":"auth_github_c32a71ee","config":{"default_lease_ttl":0,"force_no_cache":false,"max_lease_ttl":0,"token_type":"default-service"},"description":"","local":false,"options":null,"seal_wrap":false,"type":"github","uuid":"19a6b33a-a4c6-2e9b-dc81-f52c59348594"},"token/":{"accessor":"auth_token_70e9a4ae","config":{"default_lease_ttl":0,"force_no_cache":false,"max_lease_ttl":0,"token_type":"default-service"},"description":"token based credentials","local":false,"options":null,"seal_wrap":false,"type":"token","uuid":"43459b03-c903-d72b-eb03-a3941edea9af"},"userpass/":{"accessor":"auth_userpass_4bf07974","config":{"default_lease_ttl":0,"force_no_cache":false,"max_lease_ttl":0,"token_type":"default-service"},"description":"","local":false,"options":null,"seal_wrap":false,"type":"userpass","uuid":"a3f9d932-05de-1a9c-4ecd-2aebfc0a3ab6"},"approle/":{"accessor":"auth_approle_0d6d4d4e","config":{"default_lease_ttl":0,"force_no_cache":false,"max_lease_ttl":0,"token_type":"default-service"},"description":"","local":false,"options":null,"seal_wrap":false,"type":"approle","uuid":"eb6408f9-f9a5-7455-49c0-a52866bf1ce7"},"ldap/":{"accessor":"auth_ldap_39f898c8","config":{"default_lease_ttl":0,"force_no_cache":false,"max_lease_ttl":0,"token_type":"default-service"},"description":"","local":false,"options":null,"seal_wrap":false,"type":"ldap","uuid":"9c382ae2-9be2-92cd-1170-b83b927c45b6"},"request_id":"a0c8e50f-11ee-14e4-b9d0-0e3e31a696c8","lease_id":"","renewable":false,"lease_duration":0,"data":{"approle/":{"accessor":"auth_approle_0d6d4d4e","config":{"default_lease_ttl":0,"force_no_cache":false,"max_lease_ttl":0,"token_type":"default-service"},"description":"","local":false,"options":null,"seal_wrap":false,"type":"approle","uuid":"eb6408f9-f9a5-7455-49c0-a52866bf1ce7"},"github/":{"accessor":"auth_github_c32a71ee","config":{"default_lease_ttl":0,"force_no_cache":false,"max_lease_ttl":0,"token_type":"default-service"},"description":"","local":false,"options":null,"seal_wrap":false,"type":"github","uuid":"19a6b33a-a4c6-2e9b-dc81-f52c59348594"},"ldap/":{"accessor":"auth_ldap_39f898c8","config":{"default_lease_ttl":0,"force_no_cache":false,"max_lease_ttl":0,"token_type":"default-service"},"description":"","local":false,"options":null,"seal_wrap":false,"type":"ldap","uuid":"9c382ae2-9be2-92cd-1170-b83b927c45b6"},"token/":{"accessor":"auth_token_70e9a4ae","config":{"default_lease_ttl":0,"force_no_cache":false,"max_lease_ttl":0,"token_type":"default-service"},"description":"token based credentials","local":false,"options":null,"seal_wrap":false,"type":"token","uuid":"43459b03-c903-d72b-eb03-a3941edea9af"},"userpass/":{"accessor":"auth_userpass_4bf07974","config":{"default_lease_ttl":0,"force_no_cache":false,"max_lease_ttl":0,"token_type":"default-service"},"description":"","local":false,"options":null,"seal_wrap":false,"type":"userpass","uuid":"a3f9d932-05de-1a9c-4ecd-2aebfc0a3ab6"}},"wrap_info":null,"warnings":null,"auth":null}
+[root@utrutstvault01v bin]# curl -s --header "X-Vault-Token: s.pZxu0W1fY4YD46NinELkxXc4" http://10.13.3.10:8200/v1/sys/auth | jq
+{
+  "token/": {
+    "accessor": "auth_token_70e9a4ae",
+    "config": {
+      "default_lease_ttl": 0,
+      "force_no_cache": false,
+      "max_lease_ttl": 0,
+      "token_type": "default-service"
+    },
+    "description": "token based credentials",
+    "local": false,
+    "options": null,
+    "seal_wrap": false,
+    "type": "token",
+    "uuid": "43459b03-c903-d72b-eb03-a3941edea9af"
+  },
+  "userpass/": {
+    "accessor": "auth_userpass_4bf07974",
+    "config": {
+      "default_lease_ttl": 0,
+      "force_no_cache": false,
+      "max_lease_ttl": 0,
+      "token_type": "default-service"
+    },
+    "description": "",
+    "local": false,
+    "options": null,
+    "seal_wrap": false,
+    "type": "userpass",
+    "uuid": "a3f9d932-05de-1a9c-4ecd-2aebfc0a3ab6"
+  },
+  "approle/": {
+    "accessor": "auth_approle_0d6d4d4e",
+    "config": {
+      "default_lease_ttl": 0,
+      "force_no_cache": false,
+      "max_lease_ttl": 0,
+      "token_type": "default-service"
+    },
+    "description": "",
+    "local": false,
+    "options": null,
+    "seal_wrap": false,
+    "type": "approle",
+    "uuid": "eb6408f9-f9a5-7455-49c0-a52866bf1ce7"
+  },
+  "ldap/": {
+    "accessor": "auth_ldap_39f898c8",
+    "config": {
+      "default_lease_ttl": 0,
+      "force_no_cache": false,
+      "max_lease_ttl": 0,
+      "token_type": "default-service"
+    },
+    "description": "",
+    "local": false,
+    "options": null,
+    "seal_wrap": false,
+    "type": "ldap",
+    "uuid": "9c382ae2-9be2-92cd-1170-b83b927c45b6"
+  },
+  "github/": {
+    "accessor": "auth_github_c32a71ee",
+    "config": {
+      "default_lease_ttl": 0,
+      "force_no_cache": false,
+      "max_lease_ttl": 0,
+      "token_type": "default-service"
+    },
+    "description": "",
+    "local": false,
+    "options": null,
+    "seal_wrap": false,
+    "type": "github",
+    "uuid": "19a6b33a-a4c6-2e9b-dc81-f52c59348594"
+  },
+  "request_id": "a3118be7-ca80-a3ff-c47a-c6172adcf7d0",
+  "lease_id": "",
+  "renewable": false,
+  "lease_duration": 0,
+  "data": {
+    "approle/": {
+      "accessor": "auth_approle_0d6d4d4e",
+      "config": {
+        "default_lease_ttl": 0,
+        "force_no_cache": false,
+        "max_lease_ttl": 0,
+        "token_type": "default-service"
+      },
+      "description": "",
+      "local": false,
+      "options": null,
+      "seal_wrap": false,
+      "type": "approle",
+      "uuid": "eb6408f9-f9a5-7455-49c0-a52866bf1ce7"
+    },
+    "github/": {
+      "accessor": "auth_github_c32a71ee",
+      "config": {
+        "default_lease_ttl": 0,
+        "force_no_cache": false,
+        "max_lease_ttl": 0,
+        "token_type": "default-service"
+      },
+      "description": "",
+      "local": false,
+      "options": null,
+      "seal_wrap": false,
+      "type": "github",
+      "uuid": "19a6b33a-a4c6-2e9b-dc81-f52c59348594"
+    },
+    "ldap/": {
+      "accessor": "auth_ldap_39f898c8",
+      "config": {
+        "default_lease_ttl": 0,
+        "force_no_cache": false,
+        "max_lease_ttl": 0,
+        "token_type": "default-service"
+      },
+      "description": "",
+      "local": false,
+      "options": null,
+      "seal_wrap": false,
+      "type": "ldap",
+      "uuid": "9c382ae2-9be2-92cd-1170-b83b927c45b6"
+    },
+    "token/": {
+      "accessor": "auth_token_70e9a4ae",
+      "config": {
+        "default_lease_ttl": 0,
+        "force_no_cache": false,
+        "max_lease_ttl": 0,
+        "token_type": "default-service"
+      },
+      "description": "token based credentials",
+      "local": false,
+      "options": null,
+      "seal_wrap": false,
+      "type": "token",
+      "uuid": "43459b03-c903-d72b-eb03-a3941edea9af"
+    },
+    "userpass/": {
+      "accessor": "auth_userpass_4bf07974",
+      "config": {
+        "default_lease_ttl": 0,
+        "force_no_cache": false,
+        "max_lease_ttl": 0,
+        "token_type": "default-service"
+      },
+      "description": "",
+      "local": false,
+      "options": null,
+      "seal_wrap": false,
+      "type": "userpass",
+      "uuid": "a3f9d932-05de-1a9c-4ecd-2aebfc0a3ab6"
+    }
+  },
+  "wrap_info": null,
+  "warnings": null,
+  "auth": null
+}
+[root@utrutstvault01v bin]# pwd
+/apps/vault/bin
+[root@utrutstvault01v bin]# cd /vagrant/
+[root@utrutstvault01v vagrant]# ls -l
+total 1356
+drwxr-xr-x. 1 vagrant vagrant     512 Jul 27  2018 ansible-core
+-rw-r--r--. 1 vagrant vagrant   78666 Aug 31  2017 ansible-core-bootstrap.log
+drwxr-xr-x. 1 vagrant vagrant     672 Jun 27  2018 ansible-deploy-cockpit
+drwxr-xr-x. 1 vagrant vagrant     448 Aug 24  2018 ansible-deploy-etcd
+drwxr-xr-x. 1 vagrant vagrant     544 Jan 13  2019 ansible-deploy-kubernetes
+drwxr-xr-x. 1 vagrant vagrant     640 Jun 26 17:15 ansible-deploy-swarm
+drwxr-xr-x. 1 vagrant vagrant     608 Jun 24 11:38 ansible-devops-converged-services
+drwxr-xr-x. 1 vagrant vagrant    1184 Oct  9 23:46 ansible-devops-unified
+drwxr-xr-x. 1 vagrant vagrant     224 Aug 11  2017 ansible-docker
+drwxr-xr-x. 1 vagrant vagrant     544 Sep 29 17:17 ansible-docker-pull
+drwxr-xr-x. 1 vagrant vagrant     352 Aug  5 10:13 ansible-haproxy-cluster
+drwxr-xr-x. 1 vagrant vagrant    1984 Jul 16 09:47 ansible-selfservice
+-rw-r--r--. 1 vagrant vagrant     107 Jan 30  2019 ansible-ssh-common-args
+drwxr-xr-x. 1 vagrant vagrant     448 Jan 23  2019 ansible-teamcity
+drwxr-xr-x. 1 vagrant vagrant     320 Aug 24  2017 ase-haproxy-configs
+drwxr-xr-x. 1 vagrant vagrant     640 Nov  6  2018 cfssl-ca-cert
+drwxr-xr-x. 1 vagrant vagrant    1312 Oct 10 10:32 develOpment
+drwxr-xr-x. 1 vagrant vagrant     832 Jan 10  2019 diacs-client
+drwxr-xr-x. 1 vagrant vagrant     160 Feb 12  2019 diacsClientFe
+-rw-r--r--. 1 vagrant vagrant    5981 Feb 11  2019 diacs-client.tgz
+-rw-r--r--. 1 vagrant vagrant     537 Feb 11  2019 diacs-fe.tgz
+-rwxrwx---. 1 vagrant vagrant    1000 May 23 13:59 docker-compose-tomcat-svc.yml
+drwxr-xr-x. 1 vagrant vagrant     288 Sep 13  2017 docker-rpmbuild
+-rw-r--r--. 1 vagrant vagrant 1274280 Jul 12 22:04 HelloWorld.jar
+-rw-r--r--. 1 vagrant vagrant      62 Jul 12 22:04 HelloWorld.kt
+-rw-r--r--. 1 vagrant vagrant     989 Jul 12 22:06 HelloWorldKt.class
+drwxr-xr-x. 1 vagrant vagrant     416 Feb 19  2019 hub
+drwxr-xr-x. 1 vagrant vagrant     544 Apr 30 14:51 ito-linux-core
+drwxr-xr-x. 1 vagrant vagrant      96 Jan 26  2018 kubernetes-tls-config
+drwxr-xr-x. 1 vagrant vagrant     448 Dec 15  2017 linux-baseline
+drwxr-xr-x. 1 vagrant vagrant      96 Jul 12 22:06 META-INF
+drwxr-xr-x. 1 vagrant vagrant     576 Jan  3  2018 openstack-automation
+drwxr-xr-x. 1 vagrant vagrant     352 Aug  9 14:44 rabbitmq-cluster
+drwxr-xr-x. 1 vagrant vagrant      96 Dec  8  2017 README.md-template
+drwxr-xr-x. 1 vagrant vagrant     256 Sep 11  2017 rpmbuild
+drwxrwxrwx. 1 vagrant vagrant     384 Jul 31 19:57 Scripts
+drwxr-xr-x. 1 vagrant vagrant     352 Sep  4 16:27 sig-cloud-instance-build
+drwxr-xr-x. 1 vagrant vagrant     256 Apr 22 20:34 splunk-deployment-server
+[root@utrutstvault01v vagrant]# cd develOpment/ansible-deploy-vault/
+[root@utrutstvault01v ansible-deploy-vault]# 
+

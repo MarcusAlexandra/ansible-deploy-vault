@@ -1,76 +1,35 @@
 ---
-- name: set_fact for localhost
-  tags: always
-  set_fact:
-    env: "{{ ansible_hostname.split('usctvl')[1] }}"
-    env0: "{{ ansible_hostname.split('tst')[1] }}"
-    local_env: "{{ ansible_hostname.split('usctvl(tst|dev|qa|prd)') }}"
-  when: ansible_hostname is search('usctvl(tst|dev|qa|prd)')
-
-- debug:
-    msg: "Vault Server : {{ env }} {{env0}} HostName is {{ local_env }}"
-
-- assert:
-    that:
-      - env is search('tst|dev|qa|prd')
-
-- name: Creating vault user group
-  group:
-    name: "{{ vault_group }}"
-  become: no
-
-- name: Creating vault user
-  user:
-    name: "{{ vault_user }}"
-    group: "{{ vault_group }}"
-    system: yes
-    shell: "/sbin/nologin"
-    comment: "vault nologin User"
-    createhome: "no"
-    state: present
-
 - name: Dowlnoad Vault from HashiCorp
   get_url:
     url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
     dest: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
+    # checksum: "sha1:a79bb68f0ebe43b8c55d91ac58950e0c44aa0310"
 
 - name: Extract Vault Archive
   unarchive:
     src: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
     dest: "/usr/bin"
     copy: no
-  register: unarchiveVault
-  tags: unarchiveVault
-
-- debug:
-    msg: "{{ unarchiveVault }}"
-
-- name: Remove archive
-  file:
-    path: "/tmp/vault_{{ vault_version }}_linux_amd64.zip"
-    state: absent
 
 - name: Create Vault Server Dirs
   file:
     path: "{{ item}}"
     state: directory
-    owner: "{{ vault_user }}"
-    group: "{{ vault_user }}"
-    mode: 0755
   with_items:
     - /etc/vault
     - /apps/data/vault
-    - /var/log/vault/logs
+    - /apps/data/manifest
+    - /var/log/vault
 
-- name: copy Vault Server Configs
+- name: Copy Vault Server Config Template
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: "{{ item.mode }}"
-    owner: "{{ vault_user }}"
-    group: "{{ vault_group }}"
+    owner: root
+    group: root
   with_items:
-    - { src: 'config.json', dest: '/etc/vault/config.json', mode: '0640' }
+    - { src: 'config.json', dest: '/etc/vault/config.json', owner: 'root', group: 'root', mode: '0640' }
 
 - name: service | {{ item }}
   service:
@@ -84,39 +43,33 @@
 - name: Modify profile
   lineinfile:
     path: /root/.bash_profile
-    line: export VAULT_ADDR=http://10.13.3.10:8200
+    line: export VAULT_ADDR="{{ vaultUrl }}:{{ vaultUrlPort }}"
     insertbefore: "^export PATH"
 
-- name: Check Vault Status
-  shell: vault status -address=http://10.13.3.10:8200 | grep -i initialized
+#-------------------------------------------------------------------------------
+#
+#  Check the Vault Status
+#
+- name: Check  Vault Status
+  shell: vault status -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.sealed'
   ignore_errors: true
   args:
     warn: false
   register: vaultStatus
 
+# TODO
+#   Do we need to check if the vault is initialized and elect to initialize it if
+#   it hasnt'?
+#
 - name: Initialize the vault
   shell: vault operator init -key-shares=5 -key-threshold=3 -format json
   environment:
-    VAULT_ADDR: "http://10.13.3.10:8200"
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
   ignore_errors: true
   args:
     warn: true
-  when: "vaultStatus.stdout.split()[1] != 'true'"
+  when: vaultStatus.stdout == 'true'
   register: vaultInitResult
-
-# - debug:
-#     msg: "{{ vaultInitResult }}"
-
-
-- name: Check Vault Status
-  shell: vault status -address=http://10.13.3.10:8200 | grep -i initialized
-  ignore_errors: true
-  args:
-    warn: false
-  register: vaultStatus
-
-# - debug:
-#     msg: "{{ vaultStatus.stdout.split()[1] }}"
 
 #-------------------------------------------------------------------------------
 # Extend ability to use the mlock syscall without running the process as root to
@@ -128,40 +81,50 @@
     capability: cap_ipc_lock+ep
     state: present
 
+- name: Check if initfile exists
+  stat:
+    path: "/etc/vault/initfile"
+  register: statInitFile
+
 - name: Parse output of vault init
   set_fact:
-    vault_init_parsed: "{{ vaultInitResult.stdout | from_json }}"
+    vaultInitParsed: "{{ vaultInitResult.stdout | from_json }}"
+  when:  not statInitFile.stat.exists
 
 - name: Write Vault Values to file
   lineinfile:
     create: yes
     dest: /etc/vault/initfile
     state: present
-    # line: "{{ vaultInitResult.stdout }}.json"
-    line: "{{ vault_init_parsed | to_json }}"
+    line: "{{ vaultInitParsed | to_json }}"
+  when:  not statInitFile.stat.exists
 
-- name: Unseal Vault
+
+- name: Parse Output of vaulUnsealKeys and vaultRootToken
+  set_fact:
+    vaultRootToken: "{{ vaultInitParsed |json_query('root_token')}}"
+    vaultUnsealKeys: "{{ vaultInitParsed |json_query('unseal_keys_hex') }}"
+  when:  not statInitFile.stat.exists
+
+- name: Unseal Vault w/unsealKeys
   shell: |
-    vault operator unseal {{ item }}
+    vault operator unseal "{{ item }}"
   environment:
-    VAULT_ADDR: "http://10.13.3.10:8200"
-  with_items: "{{ vault_init_parsed |json_query('unseal_keys_hex[*]')}}"
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+  with_items: "{{ vaultUnsealKeys }}"
+  when:  vaultUnsealKeys is defined
+  register: unsealVault
 
 - name: Vault login
   shell: |
-    vault login {{ item }}
+    vault login "{{ vaultInitParsed |json_query('root_token')}}"
   environment:
-    VAULT_ADDR: "http://10.13.3.10:8200"
-  with_items: "{{ vault_init_parsed |json_query('root_token')}}"
+    VAULT_ADDR: "{{ vaultUrl }}:{{ vaultUrlPort }}"
+  when: vaultInitParsed is defined
   register: vaultLogin
 
 - debug:
-    msg: "{{ vaultLogin.changed }}"
-
-- name: Enable Vault Logging
-  shell: vault audit enable file file_path="{{ item }}"
-  with_items:
-    - /var/log/vault/logs/audit.log
-  when: "vaultLogin.changed == 'true'"
+    msg: "{{ vaultRootToken }}"
+  when: vaultRootToken is defined
 
 ...

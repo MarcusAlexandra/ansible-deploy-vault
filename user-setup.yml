@@ -1,0 +1,24 @@
+---
+- name: Add group {{ user }}
+  group:
+    name: "{{ user }}"
+    gid: "{{ user_id }}"
+    state: present
+
+- name: Add user {{ user }}
+  user:
+    name: "{{ user }}"
+    uid: "{{ user_id }}"
+    non_unique: yes
+    group: "{{ user }}"
+    home: /home/{{ user }}
+    createhome: yes
+    state: present
+
+- name: Create {{ user }} data directory
+  file:
+    path=/var/lib/{{ user }}
+    state=directory
+    owner={{ user }}
+    group={{ user }}
+    mode=0755

@@ -1,4 +1,4 @@
-# ansible-deploy-vault/../../roles/README.md
+# ansible-devops-unified/../roles/vault-server/README.md
 
 ---
 Role Name
@@ -15,6 +15,37 @@ Playbook assumes the archived image has been uploaded to Sonatype Nexus
 
 export VAULT_ADDR=http://10.13.3.10:8200
 echo "export VAULT_ADDR=http://10.13.3.10:8200" >> ~/.bashrc
+
+  See:
+  [root@utrutstvault01v ~]# vault --help
+  Usage: vault <command> [args]
+
+  Common commands:
+      read        Read data and retrieves secrets
+      write       Write data, configuration, and secrets
+      delete      Delete secrets and configuration
+      list        List data or secrets
+      login       Authenticate locally
+      agent       Start a Vault agent
+      server      Start a Vault server
+      status      Print seal and HA status
+      unwrap      Unwrap a wrapped secret
+
+  Other commands:
+      audit          Interact with audit devices
+      auth           Interact with auth methods
+      kv             Interact with Vault's Key-Value storage
+      lease          Interact with leases
+      namespace      Interact with namespaces
+      operator       Perform operator-specific tasks
+      path-help      Retrieve API help for paths
+      plugin         Interact with Vault plugins and catalog
+      policy         Interact with policies
+      print          Prints runtime configurations
+      secrets        Interact with secrets engines
+      ssh            Initiate an SSH session
+      token          Interact with tokens
+  [root@utrutstvault01v ~]#
 
 Unsealing the Vault
 ----------------------
@@ -55,7 +86,7 @@ To Unseal the Vault, having gotten the Unseal Keys from the Vault init.file, use
      Threshold          3
      Unseal Progress    1/3
      Unseal Nonce       911eceee-1d46-8dd1-2d04-9206f061cee0
-     Version            1.1.4
+     ersion            1.1.4
      HA Enabled         false
      [root@utrutstvault01v ~]# vault operator unseal Upb3qn7y4UJgKGHEB6gsSHphLLuwvVJxeBAUaWE3RoE8
      Key                Value
@@ -109,12 +140,6 @@ Using the Vault CLI, login to the Vault using the "Initial Root Token"
 
 Once logged in - you're able to interact with the Vault
 
-  [root@utrutstvault01v ~]# vault auth enable approle
-  Success! Enabled approle auth method at: approle/
-  [root@utrutstvault01v ~]#
-
-# yum install jq
-
   [root@utrutstvault01v ~]# cat /etc/vault/initfile | jq .
   {
     "unseal_shares": 5,
@@ -142,36 +167,15 @@ Once logged in - you're able to interact with the Vault
   [root@utrutstvault01v ~]#
 
 
-Using jq to extract specific values form json
-
-  [root@usctvltstvlt01v ~]# vault status -format=json | jq
-  {
-    "type": "shamir",
-    "initialized": true,
-    "sealed": false,
-    "t": 3,
-    "n": 5,
-    "progress": 0,
-    "nonce": "",
-    "version": "1.1.4",
-    "migration": false,
-    "cluster_name": "vault-cluster-8008992f",
-    "cluster_id": "a615554d-4d61-2366-0ec3-cfa7f8e6d26a",
-    "recovery_seal": false
-  }
-  [root@usctvltstvlt01v ~]# vault status -format=json | jq -r '.initialized'
-  true
-  [root@usctvltstvlt01v ~]#
-
 Requirements
 ------------
 There are no pre-requisites for executing the playbook beyond those listed below: (Based on minimal workstation configuration)
 
-   Oracle VirtualBox 5.1.26
-   Vagrant 1.9.8
-   test-kitchen 1.19.1
-   kitchen-ansible 0.48.1
-   kitchen-vagrant 1.2.1
+   Oracle VirtualBox 6.0.10
+   Vagrant 2.2.5
+   test-kitchen 2.2.5
+   kitchen-ansible 0.50.1
+   kitchen-vagrant 1.6.0
    serverspec 2.41.13
 
 Test Kitchen
@@ -190,13 +194,11 @@ Role Variables
 
 Dependencies
 ------------
-ansible >= 2.7.5
+ansible >= 2.8.4
 chef-client for integration tests
     installed from chef.io
 
-Roles
 
-    ../roles/teamcity-server
 
 Converges the host with all the supporting tools for a tested teamcity deployment.
 
@@ -210,14 +212,66 @@ Pip dependencies for removal and standardise on rpm.
 
 Playbook Role
 ----------------
-
+  Roles
+    ../roles/vault-server
 Convergence tests
 --------------------
 
-#TODO
-
-Update with output from playbook
-
   Integration tests
   --------------------
-      lindsworth_garvey@SHE-MB1036 ~/ssiRepo/ansiblePlaybook/develOpment/ansible-devops-unified (feature/DevOps-4796-1) $ kitchen verify
+      lindsworth_garvey@SHE-MB1036 ~/ssiRepo/ansiblePlaybook/develOpment/ansible-devops-unified (feature/DevOps-4928-1) $ kitchen verify
+      lindsworth_garvey@SHE-MB1036 ~/ssiRepo/ansiblePlaybook/ansible-devops-unified (feature/DevOps-4928-1) $ kitchen verify
+-----> Starting Kitchen (v2.2.5)
+-----> Verifying <vault-server-ansible-centos-761810-x86-64>...
+       Preparing files for transfer
+-----> Busser installation detected (busser)
+-----> Busser plugin detected: busser-serverspec
+       Removing /tmp/verifier/suites/serverspec
+       Transferring files to <vault-server-ansible-centos-761810-x86-64>
+-----> Running serverspec test suite
+       /opt/chef/embedded/bin/ruby -I/tmp/verifier/suites/serverspec -I/tmp/verifier/gems/gems/rspec-support-3.8.2/lib:/tmp/verifier/gems/gems/rspec-core-3.8.2/lib /opt/chef/embedded/bin/rspec --pattern /tmp/verifier/suites/serverspec/\*\*/\*_spec.rb --color --format documentation --default-path /tmp/verifier/suites/serverspec
+
+       Yumrepo "epel"
+         should exist
+         should be enabled
+
+       Package "git"
+         should be installed
+
+       Package "openssh-clients"
+         should be installed
+
+       Package "rsync"
+         should be installed
+
+       Package "sysstat"
+         should be installed
+
+       Package "sudo"
+         should be installed
+
+       Package "tar"
+         should be installed
+
+       Package "unzip"
+         should be installed
+
+       Package "wget"
+         should be installed
+
+       Package "unzip"
+         should be installed
+
+       Package "bzip2"
+         should be installed
+
+       File "/apps/vault"
+         should exist
+         should be directory
+
+       Finished in 0.65244 seconds (files took 0.34066 seconds to load)
+       14 examples, 0 failures
+
+       Finished verifying <vault-server-ansible-centos-761810-x86-64> (0m2.50s).
+-----> Kitchen is finished. (0m2.84s)
+lindsworth_garvey@SHE-MB1036 ~/ssiRepo/ansiblePlaybook/ansible-devops-unified (feature/DevOps-4928-1) $

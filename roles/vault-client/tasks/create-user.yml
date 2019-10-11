@@ -5,19 +5,16 @@
     gid: "{{ vault_user_id }}"
     state: present
 
+
 - name: Add user {{ user }}
   user:
     name: "{{ vault_user }}"
     uid: "{{ vault_user_id }}"
-    group: "{{ vault_group }}"
-    password: "{{ vault_passwd }}"
-    comment: "Vault nologin User"
-    home: "/{{ vault_home }}"
+    group: "{{ vault_user }}"
+    password: "{{ ansibleVault.json.data.value }}"
+    home: "/apps/{{ vault_user }}"
     shell: /bin/bash
     skeleton: /etc/skel
-    state: present
     create_home: yes
   tags: [ 'vault_user', 'vault_installdir' ]
-
-
 ...

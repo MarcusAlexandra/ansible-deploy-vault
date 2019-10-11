@@ -1,0 +1,99 @@
+---
+# ansible-playbook -i localhost, -c local -D ./tt.yml -e "login=ansible"
+- hosts: all
+  gather_facts: true
+  become: true
+  become_user: root
+  become_method: sudo
+  tags: always
+
+  vars:
+    vaultUrl: http://10.13.3.10
+    vaultUrlPort: 8200
+    userPassuser: "{{ login }}"
+
+  tasks:
+    - debug:
+        msg: "Login is {{ userPassuser }}"
+
+     # curl -s -H "X-Vault-Token: s.TYtaD2Eu3lbIQMcYJ9eFwfEn" --request POST \
+     #   --data '{"password": "teamcity-svc", "policies": "default,userpass-policy"}' 
+     #   http://10.13.3.10:8200/v1/auth/userpass/users/teamcity
+     #
+     # Assumes the vault admin user is created - relies on the user of the admin token 
+     #
+
+    - name: Get VaultAdmin  User Token Password
+      uri:
+        url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/auth/userpass/login/admin"
+        method: POST
+        body: {"password": "vaultadmin-svc"}
+        body_format: json
+        status_code: 200
+        force_basic_auth: yes
+        return_content: yes
+      register: vaultAdminAuthToken
+    
+    - debug:
+        msg: "vaultAdminAuthToken {{ vaultAdminAuthToken.json.auth.client_token }}"
+
+    - name: Create Nexus User 
+      uri:
+        url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/auth/userpass/users/{{ userPassuser }}"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          X-Vault-Token: '{{ vaultAdminAuthToken.json.auth.client_token }}'
+        body: {"password": "nexus-svc", "policies": "userpass-policy"}
+        body_format: json
+        status_code: 200
+        force_basic_auth: yes
+        return_content: yes
+      register: createNexusUser
+    
+    - debug:
+        msg: "{{ createNexusUser }}"
+
+    - name: Get NeXus  User Token Password
+      uri:
+        url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/auth/userpass/login/{{ userPassuser }}"
+        method: POST
+        body: {"password": "nexus-svc"}
+        body_format: json
+        status_code: 200
+        force_basic_auth: yes
+        return_content: yes
+      register: neXusAuthToken
+    
+    - debug:
+        msg: "NexUs Auth Token {{ neXusAuthToken }}"
+
+
+    #- name: Get Ansible User Token Password
+    #  uri:
+    #    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/auth/userpass/login/{{ userPassuser }}"
+    #    method: POST
+    #    body: {"password": "ansible-svc"}
+    #    body_format: json
+    #    status_code: 200
+    #    force_basic_auth: yes
+    #    return_content: yes
+    #  register: ansibleAuthToken
+    #
+    #- debug:
+    #    msg: "{{ ansibleAuthToken.json.auth.client_token }}"
+
+    #- name: Get NexUs  User Token Password
+    #  uri:
+    #    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/auth/userpass/login/{{ userPassuser }}"
+    #    method: POST
+    #    body: {"password": "nexus-svc"}
+    #    body_format: json
+    #    status_code: 200
+    #    force_basic_auth: yes
+    #    return_content: yes
+    #  register: nexusAuthToken
+
+    - debug:
+        msg: "{{ nexusAuthToken.json.auth.client_token }}"
+

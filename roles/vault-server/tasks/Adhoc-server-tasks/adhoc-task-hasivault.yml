@@ -1,0 +1,48 @@
+---
+- hosts: all
+  gather_facts: true
+  become: true
+  become_user: root
+  become_method: sudo
+  tags: always
+
+  vars:
+
+  tasks:
+
+    - name: Check if Vault is Sealed
+      shell: vault status | grep -i sealed
+      ignore_errors: true
+      args:
+        warn: true
+      register: vaultSealStatus
+
+    - debug:
+        msg: "{{ vaultSealStatus.stdout.split()[1] }}"
+
+    - name: Get Unseal Keys
+      shell: cat /etc/vault/initfile.json
+      ignore_errors: true
+      register: unsealKeys
+
+    - debug:
+        msg: "{{ unsealKeys.stdout }}"
+
+    - debug:
+        msg: "{{ ( unsealKeys.stdout  | from_json).unseal_keys_hex }}"
+
+    - name: Get Unseal Hex Keys
+      set_fact:
+        unsealHexKey: "{{ (unsealKeys.stdout | from_json).unseal_keys_hex }}"
+
+    - debug:
+        msg:  "{{ unsealHexKey }}"
+
+    #- name: Unseal Vault
+    #  shell: |
+    #    vault operator unseal {{ item }}
+    #  environment:
+    #    VAULT_ADDR: "http://10.13.3.10:8200"
+    #  with_items: "{{ unsealKeys.stdout | json_query('unseal_keys_hex')}}"
+
+...

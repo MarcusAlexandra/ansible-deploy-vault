@@ -6,8 +6,6 @@ After=network-online.target
 ConditionFileNotEmpty=/etc/vault/config.json
 
 [Service]
-User=vault
-Group=vault
 EnvironmentFile=-/etc/sysconfig/vault
 Environment=GOMAXPROCS=2
 Restart=on-failure
@@ -17,8 +15,8 @@ CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
 Capabilities=CAP_IPC_LOCK+ep
 SecureBits=keep-caps
 NoNewPrivileges=yes
-StandardOutput=/var/log/vault/logs/vault.log
-StandardError=/var/log/vault/logs/error.log
+StandardOutput=/var/log/vault/vault.log
+StandardError=/var/log/vault/error.log
 LimitMEMLOCK=infinity
 ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGTERM

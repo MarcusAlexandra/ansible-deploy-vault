@@ -7,14 +7,15 @@ end
 
 %w(git
   openssh-clients
-  openssl-devel
   rsync
   sysstat
   sudo
   tar
   unzip
   wget
-  zip
+  unzip
+  bzip2
+  jq
   ).each do |pkg|
    describe package "#{pkg}", :if => os[:arch] == 'x86_64' do
      it { should be_installed }
