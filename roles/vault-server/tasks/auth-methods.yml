@@ -111,9 +111,6 @@
     return_content: yes
   register: ansibleAuth
 
-- debug:
-    msg: "ansible client token {{ ansibleAuth }}"
-
 
 - name: Get Ansible User Token Password
   uri:
@@ -128,6 +125,6 @@
 
 
 - debug:
-    msg: "Ansible User Token {{ ansibleAuthToken }}"
+    msg: "Ansible User Token {{ ansibleAuthToken.json.auth.client_token }}"
 
 ...
