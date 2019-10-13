@@ -1,0 +1,50 @@
+---
+- name: Create ssh directory
+  file:
+    dest: /root/.ssh
+    mode: 0700
+    state: directory
+    owner: root
+    group: root
+
+- name: Configure kitchenCIetcd authorized_keys for root
+  authorized_key:
+    user: root
+    key: "{{ item }}"
+    state: present
+    validate_certs: False
+  with_file:
+    - usctvletcd/usctvletcd01v-id_rsa.pub
+    - usctvletcd/usctvletcd02v-id_rsa.pub
+    - usctvletcd/usctvletcd03v-id_rsa.pub
+  when: ansible_fqdn is search('usctvletcd0(1)v')
+  tags: kitchenCIetcd_keys
+
+- name: Copy etcd Agent kitchenCI ssh keys
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - { src: 'usctvletcd/{{ ansible_hostname }}-id_rsa', dest: '/root/.ssh/id_rsa', owner: 'root', group: 'root', mode: '0600' }
+    - { src: 'usctvletcd/{{ ansible_hostname }}-id_rsa.pub', dest: '/root/.ssh/id_rsa.pub', owner: 'root', group: 'root', mode: '0644' }
+  when: ansible_hostname is search('usctvletcd0(1|2|3)v')
+
+- name: ssh-keyscan etcd Master | {{ item }}
+  shell:
+    echo -e 'y\n' | ssh-keyscan  -t rsa  -H usctvletcd01v.curbstone.com > /root/.ssh/known_hosts
+  ignore_errors: true
+  args:
+    creates: /root/.ssh/known_hosts
+  when: "ansible_hostname is search('usctvletcd0(2|3)v')"
+
+- name: Copy etcd DB
+  shell:
+    rsync -avz --delete root@10.13.3.15:/var/lib/etcd/ /var/lib/etcd/
+  ignore_errors: true
+  args:
+    warn: false
+  when: ansible_fqdn is search('usctvletcd0(2|3)v')
+...

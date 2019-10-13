@@ -1,0 +1,72 @@
+---
+
+- name: template | {{ item }}
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  with_items:
+    - { src: 'k8ms_etcd.conf.j2', dest: '/etc/etcd/etcd.conf' }
+
+- import_tasks: generate-cfssL-certs.yml
+
+- name: Copy CfssL Certs
+  shell:
+    rsync -avz root@10.13.3.15:/srv/kubernetes/ /srv/kubernetes/
+  ignore_errors: true
+  args:
+    warn: false
+  when: ansible_fqdn is search('usctvletcd0(2|3)v')
+  
+- name: service | {{ item }}
+  service:
+    name={{ item }}
+    enabled=yes
+    state=started
+  with_items:
+    - [ 'etcd' ]
+  tags: service
+
+- name: Check flannel network configuration
+  shell: etcdctl --endpoints=https://{{ ansible_fqdn }}:{{ ETCD_PORT }} --cert-file {{ ETCD_CERT_DIR }}/{{ ETCD_CERT_FILE}} --key-file {{ ETCD_CERT_DIR }}/{{ ETCD_KEY_FILE}} --ca-file {{ ETCD_CERT_DIR }}/{{ ETCD_TRUSTED_CA_FILE }} get /curbStoneOps.io/network/config
+  # shell: etcdctl --endpoints=https://{{ ETCD_DNS_HOST }}:{{ ETCD_PORT }} --cert-file {{ ETCD_CERT_DIR }}/{{ ETCD_CERT_FILE}} --key-file {{ ETCD_CERT_DIR }}/{{ ETCD_KEY_FILE}} --ca-file {{ ETCD_CERT_DIR }}/{{ ETCD_TRUSTED_CA_FILE }} get /curbStoneOps.io/network/config
+  register: etcdctl_get
+  ignore_errors: true
+
+#
+# TODO https://coreos.com/flannel/docs/latest/backends.html
+#
+
+- name: Define flannel network configuration in etcd
+  # shell: 'etcdctl --endpoints=https://{{ ETCD_DNS_HOST }}:{{ ETCD_PORT }} --cert-file {{ ETCD_CERT_DIR }}/{{ ETCD_CERT_FILE}} --key-file {{ ETCD_CERT_DIR }}/{{ ETCD_KEY_FILE}} --ca-file {{ ETCD_CERT_DIR }}/{{ ETCD_TRUSTED_CA_FILE }} mk /curbStoneOps.io/network/config
+  shell: 'etcdctl --endpoints=https://{{ ansible_fqdn }}:{{ ETCD_PORT }} --cert-file {{ ETCD_CERT_DIR }}/{{ ETCD_CERT_FILE}} --key-file {{ ETCD_CERT_DIR }}/{{ ETCD_KEY_FILE}} --ca-file {{ ETCD_CERT_DIR }}/{{ ETCD_TRUSTED_CA_FILE }} mk /curbStoneOps.io/network/config
+  "{
+  "Network": "10.254.0.0/16",
+  "SubnetLen": "24",
+  "SubnetMin": "10.254.50.0",
+  "SubnetMax": "10.254.199.0",
+  "Backend": {
+    "Type": "vxlan",
+    "VNI": "1"
+    }
+    }"'
+  args:
+    creates: /curbStoneOps.io/network/config '{"Network":"10.254.0.0/16"}'
+  register: create_etcdctl
+  when: etcdctl_get.rc != 0 and   (ansible_fqdn is search('usctvletcd01v'))
+  # when: etcdctl_get.rc != 0 and   (ansible_fqdn | search("ssi-centos7-k8[m-n]s-etcd-1.ssi.com"))
+
+- name: List etcdctl value
+  shell: 'etcdctl --endpoints=https://{{ ansible_fqdn }}:{{ ETCD_PORT }} --cert-file {{ ETCD_CERT_DIR }}/{{ ETCD_CERT_FILE}} --key-file {{ ETCD_CERT_DIR }}/{{ ETCD_KEY_FILE}} --ca-file {{ ETCD_CERT_DIR }}/{{ ETCD_TRUSTED_CA_FILE }} ls /curbStoneOps.io/network/config'
+  register: etcdctl_show
+
+- debug:
+     var: etcdctl_show
+
+- debug:
+    var: create_etcdctl
+
+  notify:
+    - service etcd restart

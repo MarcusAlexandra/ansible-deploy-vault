@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: yes
+  become_user: root
+  become_method: sudo
+  connection: ssh
+  remote_user: root
+  roles:
+    - { role: ../roles/dns-server, when: "ansible_os_family == 'RedHat'"}
+...
