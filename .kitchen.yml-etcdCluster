@@ -24,9 +24,9 @@ platforms:
   - name: ansible-centos-7.6.1810-x86_64
     driver_config:
       box: ansible-centos-7.6.1810-x86_64
-      box_url: file:///Users/lindsworth_garvey/ssiRepo/vagrantRepo/ansible-centos-7.6.1810-x86_64
+      box_url: file:///Users/lindsworthgarvey/curbStoneOps/vagrantRepo/ansible-centos-7.6.1810-x86_64
       synced_folders:
-       - [ "~/ssiRepo/ansiblePlaybook", "/vagrant"]
+       - [ "~/curbStoneOps/ansiblePlaybook", "/vagrant"]
        - [ "~/Downloads/Software", "/instImages"]
 
 suites:
@@ -75,5 +75,4 @@ suites:
       require_ansible_repo: true
       playbook: playbooks/k8s-etcd.yml
       ansible_vault_password_file: [".kitchenCIetcd"]
-
 ...

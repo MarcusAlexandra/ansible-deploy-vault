@@ -1,0 +1,58 @@
+---
+- name: set_fact | local_fqdn
+  tags: always
+  set_fact:
+    local_fqdn: "{{ inventory_hostname }}"
+  when: inventory_hostname != 'localhost'
+
+- debug: msg="{{role_path}}"
+
+- firewalld: kitchenCIetcd Named Port | {{ item }}
+    port={{ item }}
+    immediate=yes
+    permanent=true
+    state=enabled
+    zone=public
+  with_items:
+    - "53/udp"
+    - "53/tcp"
+  tags: firewalld
+  when: ansible_fqdn is search('usctvletcd01v')
+
+- name: yum | {{ item }}
+  yum:
+    name: [ 'bind-utils', 'bind', 'net-tools', 'ntp' ]
+    state: installed
+    update_cache: yes
+  tags: yum
+
+- name: file | {{ item }}
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: named
+    mode: '0755'
+  with_items:
+    - { src: '3.13.10-curbstone.com', dest: '/var/named/3.13.10-curbstone.com' }
+    - { src: 'curbstone.com', dest: '/var/named', owner: 'root', group: 'root', mode: '0640' }
+    - { src: 'named.conf', dest: '/etc', owner: 'root', group: 'named', mode: '0640' }
+  tags: file
+  when: ( ansible_fqdn == "usctvletcd01v.curbstone.com" )
+  notify:
+    - service | named | restart
+
+- name: service | {{ item }}
+  service:
+    name={{ item }}
+    enabled=yes
+    state=started
+  with_items:
+    - [ 'firewalld', 'named', 'ntpd' ]
+  tags: service
+
+  notify:
+    - service | firewalld | restart
+    - service | named | restart
+
+...
