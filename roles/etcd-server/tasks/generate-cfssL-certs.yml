@@ -8,11 +8,11 @@
 - debug: msg="{{role_path}}"
 
 - stat:
-    path: /srv/kubernetes
+    path: "{{ cert_dir }}"
   register: p
 
 - debug:
-    msg: "Directory /srv/kubernetes directory exists"
+    msg: "Directory {{ cert_dir }} directory exists"
   when: p.stat.isdir is defined and p.stat.isdir
   ignore_errors: false
 
@@ -23,7 +23,7 @@
     state={{ item.state }}
     group={{ item.group }}
   with_items:
-    - { dst: /srv/kubernetes, mode: '0750', state: directory, group: etcd }
+    - { dst: '{{ cert_dir }}', mode: '0750', state: directory, group: etcd }
 
 - name: file | copy cfSSL
   tags: copy_cfSSL
@@ -32,11 +32,11 @@
     dest={{ item.dest }}
     mode={{ item.mode }}
   with_items:
-    - { src: 'make-k8s-ca-cert.sh', dest: '/srv/kubernetes/make-k8s-ca-cert.sh', owner: 'root', group: 'root', mode: '0755' }
+    - { src: 'make-k8s-ca-cert.sh', dest: '{{ cert_dir }}/make-k8s-ca-cert.sh', owner: 'root', group: 'root', mode: '0755' }
   when: ansible_fqdn is search('usctvletcd01v')
 
 - name: file | verify etcd_certs
-  shell: ls /srv/kubernetes/{server,client,peer}.{crt,key} /srv/kubernetes/ca.crt
+  shell: 'ls {{ cert_dir }}/{server,client,peer}.{crt,key} {{ cert_dir }}/ca.crt
   no_log: true
   ignore_errors: true
   register: etcd_certs
@@ -45,8 +45,8 @@
     msg="{{ ansible_domain }} {{ host['ip'][0] }}, {{ host['ip'][1] }}, {{ host['ip'][2] }}, {{ host['name'][0] }}, {{ host['name'][1] }}, {{ host['name'][2] }}"
 
 - name: cfSSL Generate K8s etcd_cacert
-  shell: /srv/kubernetes/make-k8s-ca-cert.sh "{{ ansible_domain }}" "{{ host['ip'][0] }} {{ host['ip'][1] }} {{ host['ip'][2] }} {{ host['name'][0] }} {{ host['name'][1] }} {{ host['name'][2] }}"
+  shell: '{{ cert_dir }}/make-k8s-ca-cert.sh "{{ ansible_domain }}" "{{ host['ip'][0] }} {{ host['ip'][1] }} {{ host['ip'][2] }} {{ host['name'][0] }} {{ host['name'][1] }} {{ host['name'][2] }}"'
   args:
-    chdir: /srv/kubernetes
+    chdir: " {{ cert_dir }}"
   when: etcd_certs.rc != 0 and ansible_fqdn is search('usctvletcd01v')
 ...

@@ -6,7 +6,7 @@
 #
 - name: Copy CfssL Certs
   shell:
-    rsync -avz root@10.13.3.15:/srv/kubernetes/ /srv/kubernetes/
+    rsync -avz root@usctvletcd01v.curbstone.com:/srv/kubernetes/ /srv/kubernetes/
   ignore_errors: true
   args:
     warn: false

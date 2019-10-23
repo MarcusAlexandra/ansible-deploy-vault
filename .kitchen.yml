@@ -35,14 +35,14 @@ suites:
         vm_hostname: usctvletcd01v.curbstone.com
         customize:
           cpus: 1
-          memory: 1048
+          memory: 512
           natdnshostresolver1: 'on'
         network:
           - ["private_network", {ip: "10.13.3.15"}]
     provisioner:
       hosts: ansible-centos-7.6.1810-x86_64
       require_ansible_repo: true
-      playbook: playbooks/k8s-etcd.yml
+      playbook: etcd-server.yml
       ansible_vault_password_file: [".kitchenCIetcd"]
 
   - name: etcd-02
@@ -50,14 +50,14 @@ suites:
         vm_hostname: usctvletcd02v.curbstone.com
         customize:
           cpus: 1
-          memory: 1048
+          memory: 512
           natdnshostresolver1: 'on'
         network:
           - ["private_network", {ip: "10.13.3.16"}]
     provisioner:
       hosts: ansible-centos-7.6.1810-x86_64
       require_ansible_repo: true
-      playbook: playbooks/k8s-etcd.yml
+      playbook: etcd-server.yml
       ansible_vault_password_file: [".kitchenCIetcd"]
 
   - name: etcd-03
@@ -65,7 +65,7 @@ suites:
         vm_hostname: usctvletcd03v.curbstone.com
         customize:
           cpus: 1
-          memory: 1048
+          memory: 512
           natdnshostresolver1: 'on'
         network:
           - ["private_network", {ip: "10.13.3.17"}]
@@ -73,7 +73,22 @@ suites:
       # sudo: true
       hosts: ansible-centos-7.6.1810-x86_64
       require_ansible_repo: true
-      playbook: playbooks/k8s-etcd.yml
+      playbook: etcd-server.yml
       ansible_vault_password_file: [".kitchenCIetcd"]
 
+  - name: vault-server
+    driver:
+      vm_hostname: utrutstvault01v.curbstone.com
+      customize:
+        cpus: 1
+        memory: 512
+        natdnshostresolver1: 'on'
+      network:
+        - ["private_network", {ip: "10.13.3.10"}]
+        - ["forwarded_port", {guest: 8200, host: 8200}]
+    provisioner:
+      hosts: ansible-centos-7.6.1810-x86_64
+      require_ansible_repo: true
+      playbook: vault-server.yml
+      ansible_vault_password_file: [".kitchenCIvault",".kitchenCIetcd"]
 ...

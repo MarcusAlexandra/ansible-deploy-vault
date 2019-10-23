@@ -8,23 +8,22 @@
 #---------------------------------------------------------------
 
 [member]
-ETCD_NAME=ssi-k8ms
+ETCD_NAME={{ ansible_hostname}}
 ETCD_DATA_DIR="/var/lib/etcd/ssi-k8ms.etcd"
 ETCD_LISTEN_CLIENT_URLS="https://0.0.0.0:2379"
 
 [cluster]
-ETCD_INITIAL_ADVERTISE_PEER_URLS="https://ssi-centos7-k8s-etcd.ssi.com:2380"
-ETCD_INITIAL_CLUSTER="ssi-k8ms-0=https://{{ host['name'][0] }}:2380, ssi-k8ms-1=https://{{ host['name'][1] }}:2380, ssh-k8ms-2=http://{{ host['name'][2] }}"2380"
-
+ETCD_INITIAL_ADVERTISE_PEER_URLS="https://{{ ansible_fqdn }}:{{ CLUSTER_PORT}}"
+ETCD_INITIAL_CLUSTER="{{ ansible_hostname }}=https://{{ ansible_fqdn }}:2380
 
 ETCD_INITIAL_CLUSTER_STATE="new"
-ETCD_INITIAL_CLUSTER_TOKEN="ssi-k8ms"
+ETCD_INITIAL_CLUSTER_TOKEN="{{ ETCD_NAME }}"
 
-ETCD_ADVERTISE_CLIENT_URLS="https://ssi-centos7-k8s-etcd.ssi.com:2379"
+ETCD_ADVERTISE_CLIENT_URLS="https://{{ ansible_fqdn }}:2379"
 
 ETCD_ELECTION_TIMEOUT=5000
 ETCD_HEARTBEAT_INTERVAL=250
-ETCD_LISTEN_PEER_URLS="https://10.13.3.10:2380"
+ETCD_LISTEN_PEER_URLS="https://{{ ansible_enp0s8.ipv4.address }}:2380"
 
 #ETCD_DISCOVERY=""
 #ETCD_DISCOVERY_SRV=""

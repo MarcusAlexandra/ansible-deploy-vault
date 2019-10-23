@@ -33,18 +33,10 @@
   when: ansible_hostname is search('usctvletcd0(1|2|3)v')
 
 - name: ssh-keyscan etcd Master | {{ item }}
-  shell:
-    echo -e 'y\n' | ssh-keyscan  -t rsa  -H usctvletcd01v.curbstone.com > /root/.ssh/known_hosts
+  shell: echo -e 'y\n' | ssh-keyscan  -t rsa  -H usctvletcd01v.curbstone.com > /root/.ssh/known_hosts
   ignore_errors: true
   args:
     creates: /root/.ssh/known_hosts
   when: "ansible_hostname is search('usctvletcd0(2|3)v')"
-
-- name: Copy etcd DB
-  shell:
-    rsync -avz --delete root@10.13.3.15:/var/lib/etcd/ /var/lib/etcd/
-  ignore_errors: true
-  args:
-    warn: false
-  when: ansible_fqdn is search('usctvletcd0(2|3)v')
+  
 ...

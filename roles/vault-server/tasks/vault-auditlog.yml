@@ -4,9 +4,6 @@
      vault status -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.sealed'
   register: vaultSealed
 
-- debug:
-    msg: "Task: Is Vault Unsealed: {{ vaultSealed.stdout }}"
-
 - name: Get vaultUnseal RootToken
   shell: vault token lookup -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.data.id'
   ignore_errors: true

@@ -8,7 +8,7 @@
 #---------------------------------------------------------------
 
 [member]
-ETCD_NAME={{ ETCD_NAME }}
+ETCD_NAME={{ ansible_hostname}}
 ETCD_DATA_DIR="/var/lib/etcd/{{ ETCD_NAME }}.etcd"
 ETCD_LISTEN_CLIENT_URLS="https://{{ ETCD_HOSTNAME }}:{{ ETCD_PORT }}"
 
@@ -21,8 +21,7 @@ ETCD_INITIAL_ADVERTISE_PEER_URLS="https://{{ ansible_fqdn }}:{{ CLUSTER_PORT}}"
 {% if ETCD_INITIAL_CLUSTER is defined %}
 ETCD_INITIAL_CLUSTER="{{ ETCD_NAME }}=https://{{ ETCD_DNS_HOST }}:{{ CLUSTER_PORT }}"
 {% else %}
-#ETCD_INITIAL_CLUSTER="{{ ETCD_NAME }}=https://{{ ansible_fqdn }}:{{ CLUSTER_PORT }}"
-ETCD_INITIAL_CLUSTER="ssi-k8ms-0=https://{{ host['name'][0] }}:2380, ssi-k8ms-1=https://{{ host['name'][1] }}:2380, ssh-k8ms-2=https://{{ host['name'][2] }}:2380"
+ETCD_INITIAL_CLUSTER="{{ host['name'][0].split('.curbstone.com')[0] }}=https://{{ host['name'][0] }}:2380, {{ host['name'][1].split('.curbstone.com')[0] }}=https://{{ host['name'][1] }}:2380, {{ host['name'][2].split('.curbstone.com')[0] }}=https://{{ host['name'][2] }}:2380"
 {% endif %}
 ETCD_INITIAL_CLUSTER_STATE="{{ ETCD_INITIAL_CLUSTER_STATE }}"
 ETCD_INITIAL_CLUSTER_TOKEN="{{ ETCD_NAME }}"

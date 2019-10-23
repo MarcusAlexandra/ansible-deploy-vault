@@ -1,30 +1,24 @@
 ---
-# [ETCD Master]
-# Set value of ETCD_DNS_HOST in array
-#   assign cluster_name according to the array element
-#   and dns_host_# to the array element
-
 ETCD_NAME: ssi-k8ms-0
-ETCD_HOSTNAME: 0.0.0.0
-ETCD_DNS_HOST_0: usctvletcd01v.curbstone.com
-ETCD_DNS_HOST_1: usctvletcd02v.curbstone.com
-ETCD_DNS_HOST_2: usctvletcd03v.curbstone.com
-ETCD_PORT: 2379
-CLUSTER_PORT: 2380
-ETCD_DATA_DIR: /var/lib/etcd
-ETCD_INITIAL_CLUSTER_STATE: new
+host_interfaces: 0.0.0.0
+host_port: 2379
+cluster_port: 2380
+data_dir: /apps/etcd
+initial_cluster_token: vault-etcd
+initial_cluster_state: new
 
 #[ETCD TLS Security]
-ETCD_CERT_DIR: /srv/kubernetes
-ETCD_CERT_FILE: server.crt
-ETCD_KEY_FILE: server.key
-ETCD_CLIENT_CERT_AUTH: "true"
-ETCD_TRUSTED_CA_FILE: ca.crt
-ETCD_AUTO_TLS: "false"
-ETCD_PEER_CERT_FILE: peer.crt
-ETCD_PEER_KEY_FILE: peer.key
-ETCD_PEER_CLIENT_CERT_AUTH: "false"
-ETCD_PEER_AUTO_TLS: "false"
+
+cert_dir: /etc/etcd/cfssL
+server_cert: server.crt
+server_key: server.key
+clientcert_auth: "true"
+ca_cert: ca.crt
+auto_tls: "false"
+peer_cert: peer.crt
+peer_key: peer.key
+client_peercert_auth: "false"
+peer_auto_tls: "false"
 
 host:
   ip:

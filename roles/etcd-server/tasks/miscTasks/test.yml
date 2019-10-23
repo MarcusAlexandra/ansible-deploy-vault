@@ -1,0 +1,36 @@
+# etcdctl --no-sync --endpoints https://usctvletcd01v.curbstone.com:2379  --ca-file /srv/kubernetes/ca.crt --cert-file /srv/kubernetes/server.crt --key-file /srv/kubernetes/server.key cluster-health
+# ---
+# - hosts: all
+#   gather_facts: true
+#   become: true
+#   become_user: root
+#   become_method: sudo
+#   tags: always
+#
+#   tasks:
+#
+#    - name: Copy cfssL certs
+#      shell:
+#        scp -rp root@10.13.3.15:/srv/kubernetes/* /srv/kubernetes
+#
+#     - name: Copy CfssL Certs
+#       shell:
+#         rsync -avz root@10.13.3.15:/srv/kubernetes/ /srv/kubernetes/
+#
+#     - name: Copy etcd DB
+#       shell:
+#         rsync -avz root@10.13.3.15:/var/lib/etcd /var/lib/etcd
+#
+#     - name: Recursively change ownership of a directory
+#       file:
+#         path: /srv
+#         state: directory
+#         recurse: yes
+#         group: etcd
+#
+#    - name: Synchronize /srv/kubernetes
+#      synchronize:
+#        dest: /srv/kubernetes
+#        src: rsync://root@10.13.3.15:/srv/kubernetes
+#        recursive: yes
+#        mode: pull

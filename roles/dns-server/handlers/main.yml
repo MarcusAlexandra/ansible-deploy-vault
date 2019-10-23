@@ -1,10 +1,10 @@
 ---
-- name: service | firewalld | restart
+- name: service firewalld restart
   service:
     name: firewalld
     state: restarted
 
-- name: service | named | restart
+- name: service named restart
   service:
     name: named
     state: restarted
