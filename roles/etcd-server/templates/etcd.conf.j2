@@ -21,7 +21,7 @@ ETCD_INITIAL_ADVERTISE_PEER_URLS="https://{{ ansible_fqdn }}:{{ cluster_port}}"
 {% if ETCD_INITIAL_CLUSTER is defined %}
 ETCD_INITIAL_CLUSTER="{{ ETCD_NAME }}=https://{{ ETCD_DNS_HOST }}:{{ cluster_port }}"
 {% else %}
-ETCD_INITIAL_CLUSTER="{{ host['name'][0].split('.curbstone.com')[0] }}=https://{{ host['name'][0] }}:2380,{{ host['name'][1].split('.curbstone.com')[0] }}=https://{{ host['name'][1] }}:2380,{{ host['name'][2].split('.curbstone.com')[0] }}=https://{{ host['name'][2] }}:2380"
+ETCD_INITIAL_CLUSTER="{{ host['name'][0].split('.dynataplc.com')[0] }}=https://{{ host['name'][0] }}:2380,{{ host['name'][1].split('.dynataplc.com')[0] }}=https://{{ host['name'][1] }}:2380,{{ host['name'][2].split('.dynataplc.com')[0] }}=https://{{ host['name'][2] }}:2380"
 {% endif %}
 ETCD_INITIAL_CLUSTER_STATE="{{ initial_cluster_state }}"
 ETCD_INITIAL_CLUSTER_TOKEN="{{ initial_cluster_token }}"
@@ -35,13 +35,6 @@ ETCD_ADVERTISE_CLIENT_URLS="https://{{ ETCD_DNS_HOST }}:{{ host_port}}"
 ETCD_ELECTION_TIMEOUT=5000
 ETCD_HEARTBEAT_INTERVAL=250
 ETCD_LISTEN_PEER_URLS="https://{{ansible_enp0s8.ipv4.address}}:2380"
-
-#ETCD_DISCOVERY=""
-#ETCD_DISCOVERY_SRV=""
-#ETCD_DISCOVERY_FALLBACK="proxy"
-#ETCD_DISCOVERY_PROXY=""
-#ETCD_STRICT_RECONFIG_CHECK="false"
-#ETCD_AUTO_COMPACTION_RETENTION="0"
 
 [proxy]
 ETCD_PROXY="off"

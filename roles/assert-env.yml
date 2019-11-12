@@ -1,0 +1,14 @@
+---
+- name: set_fact for localhost
+  tags: always
+  set_fact:
+    env: "{{ ansible_hostname.split('utru')[1] }}"
+    local_env: "{{ ansible_hostname.split('utru(tst|dev|qa|stg|prd)') }}"
+  when: ansible_hostname is search('utru(tst|dev|qa|stg|prd)')
+
+- debug:
+    msg: "Host environment is : {{ env }} HostName is {{ local_env }}"
+
+- assert:
+    that:
+      - env is search('tst|dev|qa|stg|prd')

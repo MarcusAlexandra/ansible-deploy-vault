@@ -7,6 +7,10 @@
 
 - debug: msg="{{role_path}}"
 
+# {{ role_path | basename}}/tasks/main.yml
+- import_tasks: "{{ role_path}}/../assert-env.yml"
+  tags: ['assertEnv']
+
 - firewalld: kitchenCIetcd Named Port | {{ item }}
     port={{ item }}
     immediate=yes
@@ -16,7 +20,7 @@
   with_items:
     - "53/udp"
     - "53/tcp"
-  when: ansible_fqdn is search('usctvletcd01v')
+  when: ansible_fqdn is search('utrutstetcd01v')
   tags: configDnsFirewalld
 
 - name: yum | {{ item }}
@@ -34,10 +38,11 @@
     group: named
     mode: '0755'
   with_items:
-    - { src: '3.13.10-curbstone.com', dest: '/var/named/3.13.10-curbstone.com' }
-    - { src: 'curbstone.com', dest: '/var/named', owner: 'root', group: 'root', mode: '0640' }
+    - { src: '3.13.10-dynataplc.com', dest: '/var/named/3.13.10-dynataplc.com' }
+    - { src: 'dynataplc.com', dest: '/var/named', owner: 'root', group: 'root', mode: '0640' }
     - { src: 'named.conf', dest: '/etc', owner: 'root', group: 'named', mode: '0640' }
-  when: ( ansible_fqdn == "usctvletcd01v.curbstone.com" )
+    - { src: 'resolv.conf', dest: '/etc', owner: 'root', group: 'root', mode: '0644' }
+  when: ( ansible_fqdn == "utrutstetcd01v.dynataplc.com" )
   tags: dnsConfigs
 
 - name: service | {{ item }}

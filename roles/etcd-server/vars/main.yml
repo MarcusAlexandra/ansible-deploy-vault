@@ -26,7 +26,7 @@ host:
     - 10.13.3.16
     - 10.13.3.17
   name:
-   - usctvletcd01v.curbstone.com
-   - usctvletcd02v.curbstone.com
-   - usctvletcd03v.curbstone.com
+   - utrutstetcd01v.dynataplc.com
+   - utrutstetcd02v.dynataplc.com
+   - utrutstetcd03v.dynataplc.com
 ...

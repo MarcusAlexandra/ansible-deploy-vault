@@ -10,32 +10,106 @@
 #    - Delete
 #    - List
 #-------------------------------------------------------------------------------
-- name: Get User Token Password
+#
+# Create ssi_jenkins_svc user with application configs
+#
+# Get Admin Usertoken
+#
+
+- name: Get Admin User Token
   uri:
-    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/auth/userpass/login/ansible"
+    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/auth/userpass/login/admin"
     method: POST
-    body: {"password": "ansible-svc"}
+    body: {"password": "vaultadmin-svc"}
     body_format: json
     status_code: 200
     force_basic_auth: yes
     return_content: yes
-  register: ansibleAuthToken
+  register: adminAuthToken
 
 - debug:
-    msg: "{{ ansibleAuthToken.json.auth.client_token }}"
+    msg: "Admin UserPass Token ==> {{ adminAuthToken.json.auth.client_token }}"
 
-- name: Get User Vault Password
+- name: Generate password Hash
+  shell: openssl passwd -1 -salt "testKItchenCi" nexusadmin123
+  ignore_errors: true
+  args:
+    warn: false
+  register: passwdSalt
+
+- debug:
+    msg: "{{ passwdSalt.stdout }}"
+
+- name: Write nexus Secrets toVault
   uri:
-    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/kv/ansible/tC-userpass"
-    method: GET
+    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/kv/ansible/ansible"
+    method: POST
+    body: {
+           "password": "{{ passwdSalt.stdout }}",
+           "home_dir": "/apps/nexus",
+           "shell": "/bin/bash",
+           "ssh_key": "",
+           "comment": "User account"
+           }
+    body_format: json
     headers:
       Content-Type: "application/json"
-      X-Vault-Token: '{{ ansibleAuthToken.json.auth.client_token }}'
-    status_code: 200
+      X-Vault-Token: '{{ adminAuthToken.json.auth.client_token }}'
+    status_code: 204
     force_basic_auth: yes
-  register: ansibleAuthPasswd
+    return_content: yes
+
+- name: Read nexus Secrets fromVault
+  uri:
+    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/kv/ansible/ansible"
+    method: GET
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+      X-Vault-Token: '{{ adminAuthToken.json.auth.client_token }}'
+    status_code: 200,204
+    force_basic_auth: yes
+    return_content: yes
+  register: ansibleSecrets
 
 - debug:
-    msg: "{{ ansibleAuthPasswd.json.data.value }}"
+    msg: "{{ ansibleSecrets.json.data | to_json }}"
 
+- name: Set Facts for nexusSecrets
+  set_fact: "{{ ansibleSecrets.json.data.password }}"
+
+- name: Write json Appliction Configs to vault
+  uri:
+    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/kv/ansible/{{ userAppConfigs }}"
+    method: POST
+    src: "{{ userAppConfigs }}.json"
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+      X-Vault-Token: '{{ adminAuthToken.json.auth.client_token }}'
+    status_code: 204
+    force_basic_auth: yes
+    return_content: yes
+
+- name: get App Configs
+  uri:
+    url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/kv/ansible/{{ userAppConfigs }}"
+    method: GET
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+      X-Vault-Token: '{{ adminAuthToken.json.auth.client_token }}'
+    status_code: 200,204
+    force_basic_auth: yes
+    return_content: yes
+  register: AppConfigs
+
+- debug:
+    msg: "{{ AppConfigs.json.data.splunk_deployment_server }}"
+    # msg: "{{ userAppConfigs.json.data | to_json }}"
 ...
+
+
+# [root@utrutstvault01v ~]# openssl passwd -1 -salt "testKItchenCi" nexusadmin123
+# $1$testKItc$E2qQS7UrFK6NVFvEoFBUI/
+# [root@utrutstvault01v ~]#

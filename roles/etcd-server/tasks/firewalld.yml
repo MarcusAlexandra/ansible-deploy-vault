@@ -9,7 +9,7 @@
     - "2379/tcp"
     - "2380/tcp"
   tags: firewalld
-  when: ansible_fqdn is search('usctvletcd')
+  when: ansible_fqdn is search('utrutstetcd')
 
 - name: Add mappings to /etc/hosts
   blockinfile:
@@ -18,10 +18,10 @@
       {{ item.ip }} {{ item.fqdn }} {{ item.name }}
     marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
   with_items:
-  - { ip: 10.13.3.15, fqdn: usctvletcd01v.curbstone.com, name: usctvletcd01v  }
-  - { ip: 10.13.3.16, fqdn: usctvletcd02v.curbstone.com, name: usctvletcd02v  }
-  - { ip: 10.13.3.17, fqdn: usctvletcd03v.curbstone.com, name: usctvletcd03v  }
-  when: ansible_fqdn is search('usctvletcd')
+  - { ip: 10.13.3.15, fqdn: utrutstetcd01v.dynataplc.com, name: utrutstetcd01v  }
+  - { ip: 10.13.3.16, fqdn: utrutstetcd02v.dynataplc.com, name: utrutstetcd02v  }
+  - { ip: 10.13.3.17, fqdn: utrutstetcd03v.dynataplc.com, name: utrutstetcd03v  }
+  when: ansible_fqdn is search('utrutstetcd')
 
   notify:
     - service restart firewalld

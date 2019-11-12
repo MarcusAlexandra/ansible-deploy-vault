@@ -4,3 +4,7 @@ vaultUrlPort: 8200
 
 vault_user: vault_admin
 vault_user_id: 1200
+
+nexusPasswd: "{{ nexusPasswdSalt}}"
+
+userAppConfigs: splunkfwdrConfigs

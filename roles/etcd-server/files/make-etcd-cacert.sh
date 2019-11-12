@@ -35,7 +35,7 @@ set -o pipefail
 node_ips="${NODE_IPS:="${1}"}"
 node_dns="${NODE_DNS:="${2}"}"
 arch="${ARCH:-"linux-amd64"}"
-cert_dir="${CERT_DIR:-"/srv/kubernetes"}"
+cert_dir="${CERT_DIR:-"/etc/etcd/vault"}"
 cert_group="${CERT_GROUP:="etcd"}"
 
 # The following certificate pairs are created:
@@ -104,15 +104,15 @@ cat <<EOF > ca-config.json
 EOF
 cat <<EOF > ca-csr.json
 {
-    "CN": "ssi.io",
+    "CN": "dynataplc.io",
     "key": {
         "algo": "rsa",
         "size": 2048
     },
     "names": [
         {
-          "O": "Marcus-Alexandra, LLC ",
-          "OU": "Marcus-Alexandra.io DevOps",
+          "O": "dynataplc ",
+          "OU": "DevOps",
           "L": "Shelton",
           "ST": "Connecticut",
           "C": "US"
@@ -146,8 +146,8 @@ cat <<EOF > server.json
     },
     "names": [
         {
-          "O": "Marcus-Alexandra, LLC ",
-          "OU": "Marcus-Alexandra.io DevOps",
+          "O": "dynataplc",
+          "OU": "DevOps",
           "L": "Shelton",
           "ST": "Connecticut",
           "C": "US"
@@ -171,8 +171,8 @@ cat <<EOF > client.json
     },
     "names": [
         {
-          "O": "Marcus-Alexandra, LLC ",
-          "OU": "Marcus-Alexandra.io DevOps",
+          "O": "dynataplc ",
+          "OU": "DevOps",
           "L": "Shelton",
           "ST": "Connecticut",
           "C": "US"
@@ -201,8 +201,8 @@ cat <<EOF > peer.json
     },
     "names": [
         {
-          "O": "Marcus-Alexandra, LLC ",
-          "OU": "Marcus-Alexandra.io DevOps",
+          "O": "dynataplc ",
+          "OU": "DevOps",
           "L": "Shelton",
           "ST": "Connecticut",
           "C": "US"
