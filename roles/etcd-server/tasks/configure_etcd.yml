@@ -44,25 +44,14 @@
   with_items:
     - [ 'etcd' ]
   tags: etcdService
-
-# - name: template Cluster Config| {{ item }}
-#   template:
-#     src: "{{ item.src }}"
-#     dest: "{{ item.dest }}"
-#     owner: root
-#     group: root
-#     mode: '0644'
-#   with_items:
-#     - { src: 'k8ms_etcd.conf.j2', dest: '/etc/etcd/etcd.conf' }
-#   when: ansible_hostname is search('usctvletcd0(1|2|3)v')
-
+  
 - name: Wait for etcdService startup
   wait_for:
     timeout: 30
   delegate_to: localhost
 
 - name: Check flannel network configuration
-  shell: etcdctl --endpoints=https://{{ ansible_fqdn }}:{{ port }} --cert-file {{ cert_dir }}/{{ server_cert }} --key-file {{ cert_dir }}/{{  server_key }} --ca-file {{ cert_dir }}/{{ ca_cert }} get /curbStoneOps.io/network/config
+  shell: etcdctl --endpoints=https://{{ ansible_fqdn }}:{{ host_port }} --cert-file {{ cert_dir }}/{{ server_cert }} --key-file {{ cert_dir }}/{{  server_key }} --ca-file {{ cert_dir }}/{{ ca_cert }} get /curbStoneOps.io/network/config
   register: etcdctl_get
   ignore_errors: true
   when: ansible_hostname is search('usctvletcd0(1)v')
@@ -72,7 +61,7 @@
 #
 
 - name: Define flannel network configuration in etcd
-  shell: 'etcdctl --endpoints=https://{{ ansible_fqdn }}:{{ port }} --cert-file {{ cert_dir }}/{{ server_cert }} --key-file {{ cert_dir }}/{{  server_key }} --ca-file {{ cert_dir }}/{{ ca_cert }} mk /curbStoneOps.io/network/config
+  shell: 'etcdctl --endpoints=https://{{ ansible_fqdn }}:{{ host_port }} --cert-file {{ cert_dir }}/{{ server_cert }} --key-file {{ cert_dir }}/{{  server_key }} --ca-file {{ cert_dir }}/{{ ca_cert }} mk /curbStoneOps.io/network/config
     "{
     "Network": "10.254.0.0/16",
     "SubnetLen": "24",
@@ -90,7 +79,7 @@
   # when: etcdctl_get.rc != 0 and   (ansible_fqdn | search("ssi-centos7-k8[m-n]s-etcd-1.ssi.com"))
 
 - name: List etcdctl value
-  shell: 'etcdctl --endpoints=https://{{ ansible_fqdn }}:{{ port }} --cert-file {{ cert_dir }}/{{ server_cert }} --key-file {{ cert_dir }}/{{  server_key }} --ca-file {{ cert_dir }}/{{ ca_cert }} ls /curbStoneOps.io/network/config'
+  shell: 'etcdctl --endpoints=https://{{ ansible_fqdn }}:{{ host_port }} --cert-file {{ cert_dir }}/{{ server_cert }} --key-file {{ cert_dir }}/{{  server_key }} --ca-file {{ cert_dir }}/{{ ca_cert }} ls /curbStoneOps.io/network/config'
   register: etcdctl_show
   when: ansible_hostname is search('usctvletcd0(1)v')
 

@@ -20,7 +20,7 @@
 - import_tasks: requirements.yml
   tags: ['installDependencies', 'installRequirements']
 
-- import_tasks: user-setup.yml
+- import_tasks: create-vault-user.yml
   tags: ['createVaultUser', 'userSetup']
 
 - import_tasks: firewalld.yml

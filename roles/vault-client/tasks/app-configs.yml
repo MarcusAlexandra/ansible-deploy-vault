@@ -1,0 +1,33 @@
+---
+# - name: Add group {{ user }}
+#   group:
+#     name: "{{ vault_user }}"
+#     gid: "{{ vault_user_id }}"
+#     state: present
+#
+#
+# - name: Add user {{ user }}
+#   user:
+#     name: "{{ vault_user }}"
+#     uid: "{{ vault_user_id }}"
+#     group: "{{ vault_user }}"
+#     password: "{{ ansibleAuthPasswd.json.data.value }}"
+#     home: "/apps/{{ vault_user }}"
+#     shell: /bin/bash
+#     skeleton: /etc/skel
+#     create_home: yes
+#   tags: [ 'vault_user', 'vault_installdir' ]
+
+
+- name: Render appConfig template
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - { src: 'splunk_universal_forwarder.j2', dest: '/tmp/splunk_universal_forwarder.yml', owner: 'root', group: 'root', mode: '0660' }
+  # when: ansible_hostname is search('usctvletcd0(1|2|3)v')
+
+...

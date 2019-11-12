@@ -36,17 +36,17 @@
   when: ansible_fqdn is search('usctvletcd01v')
 
 - name: file | verify etcd_certs
-  shell: 'ls {{ cert_dir }}/{server,client,peer}.{crt,key} {{ cert_dir }}/ca.crt
+  shell: 'ls {{ cert_dir }}/{server,client,peer}.{crt,key} {{ cert_dir }}/ca.crt'
   no_log: true
   ignore_errors: true
   register: etcd_certs
 
 - debug:
-    msg="{{ ansible_domain }} {{ host['ip'][0] }}, {{ host['ip'][1] }}, {{ host['ip'][2] }}, {{ host['name'][0] }}, {{ host['name'][1] }}, {{ host['name'][2] }}"
+    msg: "{{ ansible_domain }} {{ host['ip'][0] }}, {{ host['ip'][1] }}, {{ host['ip'][2] }}, {{ host['name'][0] }}, {{ host['name'][1] }}, {{ host['name'][2] }}"
 
 - name: cfSSL Generate K8s etcd_cacert
-  shell: '{{ cert_dir }}/make-k8s-ca-cert.sh "{{ ansible_domain }}" "{{ host['ip'][0] }} {{ host['ip'][1] }} {{ host['ip'][2] }} {{ host['name'][0] }} {{ host['name'][1] }} {{ host['name'][2] }}"'
+  shell: "{{ cert_dir }}/make-k8s-ca-cert.sh {{ ansible_domain }} {{ host['ip'][0] }} {{ host['ip'][1] }} {{ host['ip'][2] }} {{ host['name'][0] }} {{ host['name'][1] }} {{ host['name'][2] }}"
   args:
-    chdir: " {{ cert_dir }}"
+    chdir: "{{ cert_dir }}"
   when: etcd_certs.rc != 0 and ansible_fqdn is search('usctvletcd01v')
 ...

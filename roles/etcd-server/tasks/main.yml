@@ -8,4 +8,4 @@
 - import_tasks: common_pkgs.yml
 - import_tasks: authorized_keys.yml
 - import_tasks: configure_etcd.yml
-# - import_tasks: get-cacerts.yml
+- import_tasks: generate-cfssL-certs.yml

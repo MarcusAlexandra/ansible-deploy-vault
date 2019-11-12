@@ -32,7 +32,7 @@
   with_items:
     - { src: 'cfsslCerts/', dest: '/etc/vault/cfssL', owner: 'root', group: 'vault', mode: '0660' }
     - { src: 'resolv.conf', dest: '/etc/resolv.conf', owner: 'root', group: 'vault', mode: '0644' }
-  when: ansible_hostname is search('usctvletcd0(1|2|3)v')
+  when: ansible_hostname is search('utrutstvault0(1)v')
 
 - name: Copy Vault Server Config Template
   copy:
@@ -43,7 +43,7 @@
     group: root
   with_items:
     - { src: 'config-etcd.json', dest: '/etc/vault/config.json', owner: 'root', group: 'root', mode: '0640' }
-    # - { src: 'config.json', dest: '/etc/vault/config.json', owner: 'root', group: 'root', mode: '0640' }
+    #- { src: 'config.json', dest: '/etc/vault/config.json', owner: 'root', group: 'root', mode: '0640' }
 
 - name: service | {{ item }}
   service:
