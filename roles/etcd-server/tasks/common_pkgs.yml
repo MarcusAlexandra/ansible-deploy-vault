@@ -1,0 +1,21 @@
+---
+- name: Install required packages with yum
+  yum:
+    name:
+      - bc
+      - sysstat
+      - iptraf
+      - yum-utils
+      - epel-release
+      - logrotate
+      - unzip
+      - rsync
+    state: present
+
+- name: Install etcd Server Dependencies
+  yum:
+    name:
+      - perl-libwww-perl
+      - etcd
+      - jq
+    state: present

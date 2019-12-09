@@ -5,21 +5,21 @@ driver:
 provisioner:
   name: ansible_playbook
   ansible_version: 2.8.5
-  ansible_yum_repo: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+  ansible_yum_repo: "https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm"
   hosts: all
-  require_chef_for_busser: true
+  require_chef_for_busser: false
   require_ruby_for_busser: false
   ansible_verbose: false
   ansible_verbosity: 3
   ansible_check: false
   ansible_diff: true
-
-transport:
+  #passwd for salting
+  # extra_vars: nexusPasswd
+  ansport:
   max_ssh_sessions: 6
 
 verifier:
   ruby_bindir: /opt/chef/embedded/bin
-
 
 platforms:
   - name: ansible-centos-7.6.1810-x86_64
@@ -31,13 +31,58 @@ platforms:
        - [ "~/Downloads/Software", "/instImages"]
 
 suites:
+  - name: etcd-01
+    driver:
+        vm_hostname: usctvletcd01v.curbstone.com
+        customize:
+          cpus: 1
+          memory: 512
+          natdnshostresolver1: 'on'
+        network:
+          - ["private_network", {ip: "10.13.3.15"}]
+    provisioner:
+      hosts: ansible-centos-7.6.1810-x86_64
+      require_ansible_repo: true
+      playbook: etcd-server.yml
+      ansible_vault_password_file: [".kitchenCIetcd"]
+
+  - name: etcd-02
+    driver:
+        vm_hostname: usctvletcd02v.curbstone.com
+        customize:
+          cpus: 1
+          memory: 512
+          natdnshostresolver1: 'on'
+        network:
+          - ["private_network", {ip: "10.13.3.16"}]
+    provisioner:
+      hosts: ansible-centos-7.6.1810-x86_64
+      require_ansible_repo: true
+      playbook: etcd-server.yml
+      ansible_vault_password_file: [".kitchenCIetcd"]
+
+  - name: etcd-03
+    driver:
+        vm_hostname: usctvletcd03v.curbstone.com
+        customize:
+          cpus: 1
+          memory: 512
+          natdnshostresolver1: 'on'
+        network:
+          - ["private_network", {ip: "10.13.3.17"}]
+    provisioner:
+      # sudo: true
+      hosts: ansible-centos-7.6.1810-x86_64
+      require_ansible_repo: true
+      playbook: etcd-server.yml
+      ansible_vault_password_file: [".kitchenCIetcd"]
 
   - name: vault-server
     driver:
-      vm_hostname: utrutstvault01v.ssi.com
+      vm_hostname: utrutstvault01v.curbstone.com
       customize:
         cpus: 1
-        memory: 1048
+        memory: 512
         natdnshostresolver1: 'on'
       network:
         - ["private_network", {ip: "10.13.3.10"}]
@@ -46,14 +91,14 @@ suites:
       hosts: ansible-centos-7.6.1810-x86_64
       require_ansible_repo: true
       playbook: vault-server.yml
-      ansible_vault_password_file: [".kitchenCIvault"]
+      ansible_vault_password_file: [".kitchenCIvault",".kitchenCIetcd"]
 
   - name: vault-client
     driver:
-      vm_hostname: usctvltstvlt02v.curbstoneops.com
+      vm_hostname: usctvltstvlt02v.curbstone.com
       customize:
         cpus: 1
-        memory: 1048
+        memory: 512
         natdnshostresolver1: 'on'
       network:
         - ["private_network", {ip: "10.13.3.11"}]
@@ -61,5 +106,5 @@ suites:
       hosts: ansible-centos-7.6.1810-x86_64
       require_ansible_repo: true
       playbook: vault-client.yml
-      ansible_vault_password_file: [".kitchenCIvault"]
+      ansible_vault_password_file: [".kitchenCIvault",".kitchenCIetcd"]
 ...

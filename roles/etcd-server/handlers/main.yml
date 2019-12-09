@@ -1,0 +1,15 @@
+---
+# Restart etcd server
+#   - etcd
+
+- name: service etcd restart
+  tags: etcd
+  service:
+    name: etcd
+    state: restarted
+
+- name: service restart firewalld
+  tags: firewalld
+  service:
+    name: firewalld
+    state: restarted

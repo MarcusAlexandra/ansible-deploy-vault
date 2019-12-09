@@ -1,0 +1,27 @@
+---
+- firewalld: test-kitchen port | {{ item }}
+    port={{ item }}
+    immediate=yes
+    permanent=true
+    state=enabled
+    zone=public
+  with_items:
+    - "2379/tcp"
+    - "2380/tcp"
+  tags: firewalld
+  when: ansible_fqdn is search('usctvletcd')
+
+- name: Add mappings to /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    block: |
+      {{ item.ip }} {{ item.fqdn }} {{ item.name }}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
+  with_items:
+  - { ip: 10.13.3.15, fqdn: usctvletcd01v.curbstone.com, name: usctvletcd01v  }
+  - { ip: 10.13.3.16, fqdn: usctvletcd02v.curbstone.com, name: usctvletcd02v  }
+  - { ip: 10.13.3.17, fqdn: usctvletcd03v.curbstone.com, name: usctvletcd03v  }
+  when: ansible_fqdn is search('usctvletcd')
+
+  notify:
+    - service restart firewalld

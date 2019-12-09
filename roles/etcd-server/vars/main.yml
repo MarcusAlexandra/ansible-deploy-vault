@@ -1,0 +1,32 @@
+---
+ETCD_NAME: ssi-k8ms-0
+host_interfaces: 0.0.0.0
+host_port: 2379
+cluster_port: 2380
+data_dir: /apps/etcd
+initial_cluster_token: vault-etcd
+initial_cluster_state: new
+
+#[ETCD TLS Security]
+
+cert_dir: /etc/etcd/cfssL
+server_cert: server.crt
+server_key: server.key
+clientcert_auth: "true"
+ca_cert: ca.crt
+auto_tls: "false"
+peer_cert: peer.crt
+peer_key: peer.key
+client_peercert_auth: "false"
+peer_auto_tls: "false"
+
+host:
+  ip:
+    - 10.13.3.15
+    - 10.13.3.16
+    - 10.13.3.17
+  name:
+   - usctvletcd01v.curbstone.com
+   - usctvletcd02v.curbstone.com
+   - usctvletcd03v.curbstone.com
+...

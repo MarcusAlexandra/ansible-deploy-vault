@@ -16,7 +16,7 @@ path "sys/auth/*"
 # To list policies - Step 3
 path "sys/policy"
 {
-  capabilities = ["read"]
+  capabilities = ["create", "read", "update", "delete", "sudo"]
 }
 
 # Create and manage ACL policies broadly across Vault
@@ -37,6 +37,12 @@ path "sys/mounts/*"
   capabilities = ["create", "read", "update", "delete", "list", "sudo"]
 }
 
+# Read auth
+path "sys/auth/*"
+{
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+}
+
 # Read health checks
 path "sys/health"
 {
@@ -46,11 +52,11 @@ path "sys/health"
 # To perform Step 4
 path "sys/capabilities"
 {
-  capabilities = ["create", "update"]
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
 }
 
 # To perform Step 4
 path "sys/capabilities-self"
 {
-  capabilities = ["create", "update"]
+  capabilities = ["create", "read", "update", "delete", "list"]
 }

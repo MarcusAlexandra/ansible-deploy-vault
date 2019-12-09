@@ -1,0 +1,35 @@
+
+HCL must  be converted to stringified/delimited json in order to work with the API
+
+API Accepted JSON Format
+
+{
+   "policy": "path \"secret/data/test\" {\n capabilities = [ \"create\", \"read\", \"update\", \"delete\" ]\n }"
+}"
+
+{
+    "policy": "path \"secret/data/test\" {\n capabilities = [ \"create\", \"read\", \"update\", \"delete\" ]\n }"
+}"
+
+[root@utrutstvault01v vaultAuthPolicy]#   curl -s --header "X-Vault-Token: $(vault token lookup --format=json | jq -r '.data.id')" --data @tt.json  http://10.13.3.10:8200/v1/sys/policies/acl/admin1
+[root@utrutstvault01v vaultAuthPolicy]#
+
+[root@utrutstvault01v vaultAuthPolicy]# vault policy read admin1
+path "secret/data/test" {
+ capabilities = [ "create", "read", "update", "delete" ]
+ }
+[root@utrutstvault01v vaultAuthPolicy]#
+
+
+
+CLI Accepted JSON Format
+{
+  "path \"secret/data/test\" {\n capabilities = [ \"create\", \"read\", \"update\", \"delete\" ]\n }"
+}"
+
+{
+  "path \"secret/data/test\" {\n capabilities = [ \"create\", \"read\", \"update\", \"delete\" ]\n }"
+}"
+
+
+vault policy write tt tt.json

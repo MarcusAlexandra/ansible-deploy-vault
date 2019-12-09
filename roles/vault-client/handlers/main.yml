@@ -1,0 +1,9 @@
+---
+# Restart docker engine
+#
+
+- name: service restart docker
+  tags: docker
+  service:
+    name: docker
+    state: restarted

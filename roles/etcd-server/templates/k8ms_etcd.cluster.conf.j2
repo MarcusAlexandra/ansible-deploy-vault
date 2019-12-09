@@ -1,0 +1,73 @@
+#---------------------------------------------------------------
+#
+# ETCD configuration options deployed to each Kubernetes Master
+#
+# This /etc/etcd/etcd.conf Configuration file is managed by Ansible
+# any local changes will be defaulted to Ansible values
+#
+#---------------------------------------------------------------
+
+[member]
+ETCD_NAME={{ ansible_hostname}}
+ETCD_DATA_DIR="/var/lib/etcd/{{ ETCD_NAME }}.etcd"
+ETCD_LISTEN_CLIENT_URLS="https://{{ ETCD_HOSTNAME }}:{{ ETCD_PORT }}"
+
+[cluster]
+{% if ETCD_INITIAL_ADVERTISE_PEER_URLS is defined %}
+ETCD_INITIAL_ADVERTISE_PEER_URLS="https://{{ ETCD_DNS_HOST }}:{{ CLUSTER_PORT}}"
+{% else %}
+ETCD_INITIAL_ADVERTISE_PEER_URLS="https://{{ ansible_fqdn }}:{{ CLUSTER_PORT}}"
+{% endif %}
+{% if ETCD_INITIAL_CLUSTER is defined %}
+ETCD_INITIAL_CLUSTER="{{ ETCD_NAME }}=https://{{ ETCD_DNS_HOST }}:{{ CLUSTER_PORT }}"
+{% else %}
+ETCD_INITIAL_CLUSTER="{{ host['name'][0].split('.curbstone.com')[0] }}=https://{{ host['name'][0] }}:2380, {{ host['name'][1].split('.curbstone.com')[0] }}=https://{{ host['name'][1] }}:2380, {{ host['name'][2].split('.curbstone.com')[0] }}=https://{{ host['name'][2] }}:2380"
+{% endif %}
+ETCD_INITIAL_CLUSTER_STATE="{{ ETCD_INITIAL_CLUSTER_STATE }}"
+ETCD_INITIAL_CLUSTER_TOKEN="{{ ETCD_NAME }}"
+
+{% if  ETCD_DNS_HOST is defined and ETCD_DNS_HOST != ansible_fqdn %}
+ETCD_ADVERTISE_CLIENT_URLS="https://{{ ansible_fqdn }}:{{ ETCD_PORT}} "
+{% else %}
+ETCD_ADVERTISE_CLIENT_URLS="https://{{ ETCD_DNS_HOST }}:{{ ETCD_PORT}}"
+{% endif %}
+
+ETCD_ELECTION_TIMEOUT=5000
+ETCD_HEARTBEAT_INTERVAL=250
+ETCD_LISTEN_PEER_URLS="https://{{ansible_enp0s8.ipv4.address}}:2380"
+
+#ETCD_DISCOVERY=""
+#ETCD_DISCOVERY_SRV=""
+#ETCD_DISCOVERY_FALLBACK="proxy"
+#ETCD_DISCOVERY_PROXY=""
+#ETCD_STRICT_RECONFIG_CHECK="false"
+#ETCD_AUTO_COMPACTION_RETENTION="0"
+
+[proxy]
+ETCD_PROXY="off"
+ETCD_PROXY_FAILURE_WAIT="5000"
+ETCD_PROXY_REFRESH_INTERVAL="30000"
+ETCD_PROXY_DIAL_TIMEOUT="1000"
+ETCD_PROXY_WRITE_TIMEOUT="5000"
+ETCD_PROXY_READ_TIMEOUT="0"
+
+[security]
+ETCD_CERT_FILE="{{ ETCD_CERT_DIR }}/{{ ETCD_CERT_FILE}}"
+ETCD_KEY_FILE="{{ ETCD_CERT_DIR }}/{{ ETCD_KEY_FILE}}"
+ETCD_CLIENT_CERT_AUTH=false
+ETCD_TRUSTED_CA_FILE="{{ ETCD_CERT_DIR }}/{{ ETCD_TRUSTED_CA_FILE }}"
+ETCD_AUTO_TLS="false"
+ETCD_PEER_CERT_FILE="{{ ETCD_CERT_DIR }}/{{ ETCD_PEER_CERT_FILE }}"
+ETCD_PEER_KEY_FILE="{{ ETCD_CERT_DIR }}/{{ ETCD_PEER_KEY_FILE }}"
+ETCD_PEER_CLIENT_CERT_AUTH="false"
+ETCD_PEER_TRUSTED_CA_FILE="{{ ETCD_CERT_DIR }}/{{ ETCD_TRUSTED_CA_FILE }}"
+ETCD_PEER_AUTO_TLS="false"
+
+#[logging]
+ETCD_DEBUG="false"
+# examples for -log-package-levels etcdserver=WARNING,security=DEBUG
+#ETCD_LOG_PACKAGE_LEVELS=""
+
+#[profiling]
+#ETCD_ENABLE_PPROF="false"
+#ETCD_METRICS="basic"

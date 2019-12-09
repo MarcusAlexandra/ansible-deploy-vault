@@ -1,0 +1,28 @@
+{
+  "listener": [
+    {
+      "tcp": {
+        "address": "0.0.0.0:8200",
+        "tls_disable": 1
+      }
+    }
+  ],
+  "api_addr": "http://10.13.3.10:8200",
+  "storage": {
+    "etcd": {
+      "tls_ca_file": "/etc/vault/cfssL/ca.crt",
+      "tls_cert_file": "/etc/vault/cfssL/server.crt",
+      "tls_key_file": "/etc/vault/cfssL/server.key",
+      "ha_enabled": "true",
+      "path": "vault-data/",
+      "address": "https://10.13.3.15:2379,https://10.13.3.16:2379,https://10.13.3.17:2379",
+      "etcd_api": "v3"
+    }
+  },
+  "cache_size": 51200,
+  "disable_mlock": true,
+  "max_lease_ttl": "10h",
+  "default_lease_ttl": "10h",
+  "log-level": "info",
+  "ui": true
+}
