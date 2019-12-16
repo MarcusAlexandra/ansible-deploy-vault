@@ -7,7 +7,7 @@
 #        ii. Allow user to retrieve versioned kv's from vault based on asserted environments
 #            (Ex. tst|dev|qa|prod)
 
-- name: Is Vault Unsealed
+- name: Check if Vault Sealed
   shell: |
      vault status -address="{{ vaultUrl }}:{{ vaultUrlPort }}" -format json | jq -r '.sealed'
   register: vaultSealed

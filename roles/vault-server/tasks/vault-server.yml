@@ -108,11 +108,22 @@
 - name: Write Vault Values to file
   lineinfile:
     create: yes
-    dest: /etc/vault/initfile
+    dest: /etc/vault/initfile.json
     state: present
     line: "{{ vaultInitParsed | to_json }}"
   when:  not statInitFile.stat.exists
 
+  #-----------------------------------------------------------------------------
+  #
+  #  Upload vault Init file to Nexus Sonatype Repository Manager 
+  #
+
+- name: Upload Vault Init File to Nexus
+  shell: |
+    curl -v -u admin:{{ passwd }} --upload-file /etc/vault/initfile.json  'http://localhost:8081/repository/DevOps/'
+  ignore_errors: true
+  args:
+    warn: false
 
 - name: Parse Output of vaulUnsealKeys and vaultRootToken
   set_fact:

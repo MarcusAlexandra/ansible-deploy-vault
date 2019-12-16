@@ -65,4 +65,4 @@
 
 # Put handler in docker restart
   notify:
-    service docker restart
+    service restart docker

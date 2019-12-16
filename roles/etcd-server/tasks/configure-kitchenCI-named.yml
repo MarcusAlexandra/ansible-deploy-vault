@@ -5,7 +5,8 @@
     local_fqdn: "{{ inventory_hostname }}"
   when: inventory_hostname != 'localhost'
 
-- debug: msg="{{role_path}}"
+- import_tasks: "{{ role_path}}/../assert-env.yml"
+  tags: ['assertEnv']
 
 - firewalld: kitchenCIetcd Named Port | {{ item }}
     port={{ item }}
@@ -16,7 +17,7 @@
   with_items:
     - "53/udp"
     - "53/tcp"
-  when: ansible_fqdn is search('usctvletcd01v')
+  when: ansible_fqdn is search('utrutstetcd01v')
   tags: configDnsFirewalld
 
 - name: yum | {{ item }}
@@ -37,7 +38,8 @@
     - { src: '3.13.10-curbstone.com', dest: '/var/named/3.13.10-curbstone.com' }
     - { src: 'curbstone.com', dest: '/var/named', owner: 'root', group: 'root', mode: '0640' }
     - { src: 'named.conf', dest: '/etc', owner: 'root', group: 'named', mode: '0640' }
-  when: ( ansible_fqdn == "usctvletcd01v.curbstone.com" )
+    - { src: 'resolv.conf', dest: '/etc', owner: 'root', group: 'root', mode: '0644' }
+  when: ( ansible_fqdn == "utrutstetcd01v.curbstone.com" )
   tags: dnsConfigs
 
 - name: service | {{ item }}

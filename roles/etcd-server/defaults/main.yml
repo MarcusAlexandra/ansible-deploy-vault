@@ -1,4 +1,4 @@
 ---
 ETCD_HOSTNAME_IP: 10.13.3.15
-ETCD_DNS_HOST: usctvletcd01v.curbstone.com
+ETCD_DNS_HOST: utrutstetcd01v.curbstone.com
 ...

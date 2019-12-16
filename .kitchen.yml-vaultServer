@@ -25,9 +25,9 @@ platforms:
   - name: ansible-centos-7.6.1810-x86_64
     driver_config:
       box: ansible-centos-7.6.1810-x86_64
-      box_url: file:///Users/lindsworthgarvey/curbStoneOps/vagrantRepo/ansible-centos-7.6.1810-x86_64
+      box_url: file:///Users/lindsworthgarvey/curbstoneOps/vagrantRepo/ansible-centos-7.6.1810-x86_64
       synced_folders:
-       - [ "~/curbStoneOps/ansiblePlaybook", "/vagrant"]
+       - [ "~/curbstoneOps/ansiblePlaybook", "/vagrant"]
        - [ "~/Downloads/Software", "/instImages"]
 
 suites:
