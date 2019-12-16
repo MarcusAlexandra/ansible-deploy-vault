@@ -2,7 +2,7 @@
 # Restart docker engine
 #
 
-- name: service docker restart 
+- name: service restart docker
   tags: docker
   service:
     name: docker

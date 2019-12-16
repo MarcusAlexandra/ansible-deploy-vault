@@ -40,6 +40,7 @@
 - debug:
     msg: "{{ passwdSalt.stdout }}"
 
+
 - name: Write nexus Secrets toVault
   uri:
     url: "{{ vaultUrl }}:{{ vaultUrlPort }}/v1/kv/ansible/ansible"

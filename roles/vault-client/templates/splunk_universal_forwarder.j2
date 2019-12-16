@@ -1,16 +1,15 @@
-version: '3.2'
+version: '2'
 
 services:
   splunkuniversalforwarder:
     image: splunk/universalforwarder:latest
     environment:
       SPLUNK_START_ARGS: --accept-license
-      SPLUNK_PASSWORD: {{ AppConfigs.json.data.splunk_password }}
-      SPLUNK_DEPLOYMENT_SERVER: {{ AppConfigs.json.data.splunk_deployment_server }}
-      SPLUNK_S2S_PORT: {{ AppConfigs.json.data.splunk_s2s_port }}
-    hostname: ${HOSTNAME}
+      SPLUNK_PASSWORD: "{{ AppConfigs.json.data.splunk_password }}"
+      SPLUNK_DEPLOYMENT_SERVER: "{{ AppConfigs.json.data.splunk_deployment_server }}"
+      SPLUNK_S2S_PORT: "{{ AppConfigs.json.data.splunk_s2s_port }}"
     ports:
       - "9997:9997"
       - "{{ AppConfigs.json.data.splunk_s2s_port }}:{{ AppConfigs.json.data.splunk_s2s_port }}"
     volumes:
-      - {{ AppConfigs.json.data.syslog_volume }}:{{ AppConfigs.json.data.syslog_volume }}
+      - "{{ AppConfigs.json.data.syslog_volume }}:{{ AppConfigs.json.data.syslog_volume }}"

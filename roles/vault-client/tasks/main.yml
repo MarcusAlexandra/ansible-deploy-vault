@@ -1,6 +1,6 @@
 ---
 - import_tasks: get-ansible-vault-key.yml
 
-- import_tasks: configure-host.yml
+- import_tasks: app-configs.yml
 
 - import_tasks: deploy-app.yml
