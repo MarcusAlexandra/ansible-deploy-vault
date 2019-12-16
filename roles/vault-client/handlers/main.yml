@@ -2,7 +2,11 @@
 # Restart docker engine
 #
 
+<<<<<<< HEAD
 - name: service docker restart 
+=======
+- name: service restart docker
+>>>>>>> master
   tags: docker
   service:
     name: docker
