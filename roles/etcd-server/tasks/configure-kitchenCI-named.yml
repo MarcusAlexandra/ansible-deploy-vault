@@ -5,9 +5,6 @@
     local_fqdn: "{{ inventory_hostname }}"
   when: inventory_hostname != 'localhost'
 
-- debug: msg="{{role_path}}"
-
-# {{ role_path | basename}}/tasks/main.yml
 - import_tasks: "{{ role_path}}/../assert-env.yml"
   tags: ['assertEnv']
 
@@ -38,11 +35,11 @@
     group: named
     mode: '0755'
   with_items:
-    - { src: '3.13.10-dynataplc.com', dest: '/var/named/3.13.10-dynataplc.com' }
-    - { src: 'dynataplc.com', dest: '/var/named', owner: 'root', group: 'root', mode: '0640' }
+    - { src: '3.13.10-curbstone.com', dest: '/var/named/3.13.10-curbstone.com' }
+    - { src: 'curbstone.com', dest: '/var/named', owner: 'root', group: 'root', mode: '0640' }
     - { src: 'named.conf', dest: '/etc', owner: 'root', group: 'named', mode: '0640' }
     - { src: 'resolv.conf', dest: '/etc', owner: 'root', group: 'root', mode: '0644' }
-  when: ( ansible_fqdn == "utrutstetcd01v.dynataplc.com" )
+  when: ( ansible_fqdn == "utrutstetcd01v.curbstone.com" )
   tags: dnsConfigs
 
 - name: service | {{ item }}

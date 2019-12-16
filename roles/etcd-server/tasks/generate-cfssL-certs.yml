@@ -32,7 +32,7 @@
     dest={{ item.dest }}
     mode={{ item.mode }}
   with_items:
-    - { src: 'make-etcd-cacert.sh', dest: '{{ cert_dir }}/make-etcd-cacert.sh', owner: 'root', group: 'root', mode: '0755' }
+    - { src: 'make-cfssl-cacert.sh', dest: '{{ cert_dir }}/make-cfssl-cacert.sh', owner: 'root', group: 'root', mode: '0755' }
   when: ansible_fqdn is search('utrutstetcd01v')
 
 - name: file | verify etcd_certs
@@ -41,11 +41,15 @@
   ignore_errors: true
   register: etcd_certs
 
+  #-----------------------------------------------------------------------------
+  #
+  # {{ host['ip'][0] }} var required only if DNS is not configured
+  #
 - debug:
     msg: "{{ ansible_domain }} {{ host['ip'][0] }}, {{ host['ip'][1] }}, {{ host['ip'][2] }}, {{ host['name'][0] }}, {{ host['name'][1] }}, {{ host['name'][2] }}"
 
 - name: cfSSL Generate etcd_cacerts
-  shell: "{{ cert_dir }}/make-etcd-cacert.sh {{ ansible_domain }} {{ host['ip'][0] }} {{ host['ip'][1] }} {{ host['ip'][2] }} {{ host['name'][0] }} {{ host['name'][1] }} {{ host['name'][2] }}"
+  shell: "{{ cert_dir }}/make-cfssl-cacert.sh {{ ansible_domain }} {{ host['name'][0] }} {{ host['name'][1] }} {{ host['name'][2] }}"
   args:
     chdir: "{{ cert_dir }}"
   when: etcd_certs.rc != 0 and ansible_fqdn is search('utrutstetcd01v')

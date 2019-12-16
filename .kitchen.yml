@@ -13,10 +13,8 @@ provisioner:
   ansible_verbosity: 3
   ansible_check: false
   ansible_diff: true
-  #passwd for salting
-  # extra_vars: nexusPasswd
-  ansport:
-  max_ssh_sessions: 6
+  transport:
+    max_ssh_sessions: 6
 
 verifier:
   ruby_bindir: /opt/chef/embedded/bin
@@ -25,15 +23,15 @@ platforms:
   - name: ansible-centos-7.6.1810-x86_64
     driver_config:
       box: ansible-centos-7.6.1810-x86_64
-      box_url: file:///Users/lindsworth_garvey/ssiRepo/vagrantRepo/ansible-centos-7.6.1810-x86_64
+      box_url: file:///Users/lindsworth_garvey/curbStoneOps/vagrantRepo/ansible-centos-7.6.1810-x86_64
       synced_folders:
-        - [ "~/ssiRepo/ansiblePlaybook", "/vagrant"]
+        - [ "~/curbStoneOps/ansiblePlaybook", "/vagrant"]
         - [ "~/Downloads/Software", "/instImages"]
 
 suites:
   - name: etcd-01
     driver:
-        vm_hostname: utrutstetcd01v.dynataplc.com
+        vm_hostname: utrutstetcd01v.curbstone.com
         customize:
           cpus: 1
           memory: 512
@@ -48,7 +46,7 @@ suites:
 
   - name: etcd-02
     driver:
-        vm_hostname: utrutstetcd02v.dynataplc.com
+        vm_hostname: utrutstetcd02v.curbstone.com
         customize:
           cpus: 1
           memory: 512
@@ -63,7 +61,7 @@ suites:
 
   - name: etcd-03
     driver:
-        vm_hostname: utrutstetcd03v.dynataplc.com
+        vm_hostname: utrutstetcd03v.curbstone.com
         customize:
           cpus: 1
           memory: 512
@@ -79,7 +77,7 @@ suites:
 
   - name: vault-server
     driver:
-      vm_hostname: utrutstvault01v.dynataplc.com
+      vm_hostname: utrutstvault01v.curbstone.com
       customize:
         cpus: 1
         memory: 512
@@ -95,7 +93,7 @@ suites:
 
   - name: vault-client
     driver:
-      vm_hostname: usctvltstvlt02v.dynataplc.com
+      vm_hostname: usctvltstvlt02v.curbstone.com
       customize:
         cpus: 1
         memory: 512

@@ -8,8 +8,13 @@
     name: etcd
     state: restarted
 
-- name: service restart firewalld
+- name: service firewalld restart
   tags: firewalld
   service:
     name: firewalld
+    state: restarted
+
+- name: service named restart
+  service:
+    name: named
     state: restarted

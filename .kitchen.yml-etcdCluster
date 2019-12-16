@@ -24,15 +24,15 @@ platforms:
   - name: ansible-centos-7.6.1810-x86_64
     driver_config:
       box: ansible-centos-7.6.1810-x86_64
-      box_url: file:///Users/lindsworthgarvey/dynataplcOps/vagrantRepo/ansible-centos-7.6.1810-x86_64
+      box_url: file:///Users/lindsworthgarvey/curbstoneOps/vagrantRepo/ansible-centos-7.6.1810-x86_64
       synced_folders:
-       - [ "~/dynataplcOps/ansiblePlaybook", "/vagrant"]
+       - [ "~/curbstoneOps/ansiblePlaybook", "/vagrant"]
        - [ "~/Downloads/Software", "/instImages"]
 
 suites:
   - name: etcd-01
     driver:
-        vm_hostname: utrutstetcd01v.dynataplc.com
+        vm_hostname: utrutstetcd01v.curbstone.com
         customize:
           cpus: 1
           memory: 1048
@@ -47,7 +47,7 @@ suites:
 
   - name: etcd-02
     driver:
-        vm_hostname: utrutstetcd02v.dynataplc.com
+        vm_hostname: utrutstetcd02v.curbstone.com
         customize:
           cpus: 1
           memory: 1048
@@ -62,7 +62,7 @@ suites:
 
   - name: etcd-03
     driver:
-        vm_hostname: utrutstetcd03v.dynataplc.com
+        vm_hostname: utrutstetcd03v.curbstone.com
         customize:
           cpus: 1
           memory: 1048

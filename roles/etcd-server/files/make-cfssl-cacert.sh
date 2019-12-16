@@ -104,16 +104,16 @@ cat <<EOF > ca-config.json
 EOF
 cat <<EOF > ca-csr.json
 {
-    "CN": "dynataplc.io",
+    "CN": "curbstone.com",
     "key": {
         "algo": "rsa",
         "size": 2048
     },
     "names": [
         {
-          "O": "dynataplc ",
-          "OU": "DevOps",
-          "L": "Shelton",
+          "O": "curbstone.com ",
+          "OU": "DevOps.io",
+          "L": "Stratford",
           "ST": "Connecticut",
           "C": "US"
         }
@@ -146,9 +146,9 @@ cat <<EOF > server.json
     },
     "names": [
         {
-          "O": "dynataplc",
-          "OU": "DevOps",
-          "L": "Shelton",
+          "O": "curbstone.com",
+          "OU": "DevOps.io",
+          "L": "Stratford",
           "ST": "Connecticut",
           "C": "US"
         }
@@ -171,9 +171,9 @@ cat <<EOF > client.json
     },
     "names": [
         {
-          "O": "dynataplc ",
-          "OU": "DevOps",
-          "L": "Shelton",
+          "O": "curbstone.com ",
+          "OU": "DevOps.io",
+          "L": "Stratford",
           "ST": "Connecticut",
           "C": "US"
         }
@@ -201,9 +201,9 @@ cat <<EOF > peer.json
     },
     "names": [
         {
-          "O": "dynataplc ",
-          "OU": "DevOps",
-          "L": "Shelton",
+          "O": "curbstone.com ",
+          "OU": "DevOps.io",
+          "L": "Stratford",
           "ST": "Connecticut",
           "C": "US"
         }

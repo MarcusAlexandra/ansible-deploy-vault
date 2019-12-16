@@ -1,7 +1,6 @@
 ---
-- name: Import dns-server role
-  import_role:
-    name: dns-server
+- import_tasks: configure-kitchenCI-named.yml
+  tags: [configNamed]
 
 - import_tasks: firewalld.yml
 - import_tasks: dns_resolv_conf.yml
