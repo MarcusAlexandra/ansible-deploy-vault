@@ -1,6 +1,6 @@
 ---
 - name: Create /etc/resolv.conf
-  shell: echo -e "search utrutstetcd01v.dynataplc.com dynataplc.com \nnameserver 10.13.3.15 \nnameserver 10.0.2.3" > /etc/resolv.conf
+  shell: echo -e "search utrutstetcd01v.curbstone.com curbstone.com \nnameserver 10.13.3.15 \nnameserver 10.0.2.3" > /etc/resolv.conf
   ignore_errors: true
   args:
     warn: true

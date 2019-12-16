@@ -25,16 +25,16 @@ platforms:
   - name: ansible-centos-7.6.1810-x86_64
     driver_config:
       box: ansible-centos-7.6.1810-x86_64
-      box_url: file:///Users/lindsworthgarvey/dynataplcOps/vagrantRepo/ansible-centos-7.6.1810-x86_64
+      box_url: file:///Users/lindsworthgarvey/curbstoneOps/vagrantRepo/ansible-centos-7.6.1810-x86_64
       synced_folders:
-       - [ "~/dynataplcOps/ansiblePlaybook", "/vagrant"]
+       - [ "~/curbstoneOps/ansiblePlaybook", "/vagrant"]
        - [ "~/Downloads/Software", "/instImages"]
 
 suites:
 
   - name: vault-server
     driver:
-      vm_hostname: utrutstvault01v.dynataplc.com
+      vm_hostname: utrutstvault01v.curbstone.com
       customize:
         cpus: 1
         memory: 1048
@@ -50,7 +50,7 @@ suites:
 
   - name: vault-client
     driver:
-      vm_hostname: usctvltstvlt02v.dynataplc.com
+      vm_hostname: usctvltstvlt02v.curbstone.com
       customize:
         cpus: 1
         memory: 1048

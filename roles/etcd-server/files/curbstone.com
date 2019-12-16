@@ -1,12 +1,12 @@
 $TTL 1D
-@       IN SOA  utrutstetcd01v.dynataplc.com. root.dynataplc.com. (
+@       IN SOA  utrutstetcd01v.curbstone.com. root.curbstone.com. (
                                         0       ; serial
                                         1D      ; refresh
                                         1H      ; retry
                                         1W      ; expire
                                         3H      ; minimum
 )
-@                               IN      NS      utrutstetcd01v.dynataplc.com.
+@                               IN      NS      utrutstetcd01v.curbstone.com.
 @                               IN      A       10.13.3.15
 @                               IN      A       10.13.3.16
 @                               IN      A       10.13.3.17
