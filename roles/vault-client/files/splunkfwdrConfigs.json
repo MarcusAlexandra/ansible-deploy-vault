@@ -1,5 +1,13 @@
 {
+<<<<<<< HEAD
   "splunk_password": "splunk",
+=======
+<<<<<<< HEAD
+  "splunk_password": "password",
+=======
+  "splunk_password": "splunk",
+>>>>>>> master
+>>>>>>> d7883920a3387806e33d24be11e2b84fd094b16c
   "splunk_deployment_server": "splunkdeployment-dev.surveysampling.com",
   "splunk_s2s_port": "8089",
   "syslog_volume": "/home/appuser/syslog"
